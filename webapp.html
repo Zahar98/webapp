@@ -705,20 +705,37 @@
         if (window.Telegram && window.Telegram.WebApp) {
             depositButton.addEventListener('click', () => {
                 showStatusMessage("Отправка запроса на пополнение...");
-                window.Telegram.WebApp.sendData(JSON.stringify({ action: "start_deposit_flow" }));
-                // Добавляем небольшую задержку перед закрытием, чтобы убедиться, что данные отправлены
-                setTimeout(() => {
-                    window.Telegram.WebApp.close();
-                }, 1000); // Задержка 1 секунда
+                // Добавляем тактильную отдачу (вибрацию) для подтверждения нажатия
+                if (window.Telegram.WebApp.HapticFeedback) {
+                    window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+                }
+                try {
+                    window.Telegram.WebApp.sendData(JSON.stringify({ action: "start_deposit_flow" }));
+                    console.log("Данные для депозита отправлены в WebApp.");
+                    // Закрываем WebApp после отправки команды.
+                    // Telegram сам решает, когда закрывать WebApp после sendData.
+                    // setTimeout(() => { window.Telegram.WebApp.close(); }, 500); // Небольшая задержка
+                } catch (e) {
+                    console.error("Ошибка при отправке данных для депозита через WebApp:", e);
+                    showStatusMessage("Ошибка при отправке запроса.");
+                }
             });
 
             withdrawButton.addEventListener('click', () => {
                 showStatusMessage("Отправка запроса на вывод средств...");
-                window.Telegram.WebApp.sendData(JSON.stringify({ action: "start_withdraw_flow" }));
-                // Добавляем небольшую задержку перед закрытием, чтобы убедиться, что данные отправлены
-                setTimeout(() => {
-                    window.Telegram.WebApp.close();
-                }, 1000); // Задержка 1 секунда
+                // Добавляем тактильную отдачу (вибрацию) для подтверждения нажатия
+                if (window.Telegram.WebApp.HapticFeedback) {
+                    window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+                }
+                try {
+                    window.Telegram.WebApp.sendData(JSON.stringify({ action: "start_withdraw_flow" }));
+                    console.log("Данные для вывода отправлены в WebApp.");
+                    // Закрываем WebApp после отправки команды.
+                    // setTimeout(() => { window.Telegram.WebApp.close(); }, 500); // Небольшая задержка
+                } catch (e) {
+                    console.error("Ошибка при отправке данных для вывода через WebApp:", e);
+                    showStatusMessage("Ошибка при отправке запроса.");
+                }
             });
         } else {
             // Для автономного тестирования, логируем клики
