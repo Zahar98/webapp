@@ -111,122 +111,134 @@
     </div>
 
     <script>
-        // Check if Telegram WebApp API is available
-        if (window.Telegram && window.Telegram.WebApp) {
-            window.Telegram.WebApp.ready();
-            Telegram.WebApp.expand(); // Expand the WebApp to full height
+        // Use a function to encapsulate WebApp logic and ensure it runs when ready
+        function initializeWebApp() {
+            // Check if Telegram WebApp API is available
+            if (window.Telegram && window.Telegram.WebApp) {
+                // Inform Telegram WebApp that the page is ready
+                Telegram.WebApp.ready();
+                // Expand the WebApp to full height immediately
+                Telegram.WebApp.expand();
 
-            // Get initial data passed from the bot (if any)
-            const urlParams = new URLSearchParams(window.location.search);
-            const initialBalancesEncoded = urlParams.get('initial_balances');
-            let initialBalances = {};
+                console.log("Telegram WebApp API is ready.");
 
-            if (initialBalancesEncoded) {
-                try {
-                    // Decode from URL-safe Base64 and then parse JSON
-                    const decodedBalances = decodeURIComponent(initialBalancesEncoded);
-                    initialBalances = JSON.parse(atob(decodedBalances));
-                    console.log('Initial balances loaded:', initialBalances);
-                } catch (e) {
-                    console.error("Error decoding or parsing initial balances:", e);
-                    initialBalances = {};
-                }
-            } else {
-                console.log("No initial balances provided in URL.");
-            }
+                // Get initial data passed from the bot (if any)
+                const urlParams = new URLSearchParams(window.location.search);
+                const initialBalancesEncoded = urlParams.get('initial_balances');
+                let initialBalances = {};
 
-            // Function to display balances
-            function displayBalances(balances) {
-                const balancesList = document.getElementById('balances-list');
-                balancesList.innerHTML = ''; // Clear existing list
-
-                let totalUSD = 0; // Assuming USDT is always 1 USD for simplicity in WebApp display
-                const cryptoPrices = {
-                    'BTC': 70000, // Placeholder, ideally fetch live or get from bot
-                    'ETH': 3500,  // Placeholder
-                    'TON': 7.5,   // Placeholder
-                    'USDT': 1.0    // Stablecoin
-                };
-
-                // Fetch real-time prices (optional, for more accurate USD display)
-                // In a real scenario, you'd make an AJAX call or get this from the bot directly
-                async function fetchPrices() {
+                if (initialBalancesEncoded) {
                     try {
-                        const response = await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,tether,toncoin");
-                        const data = await response.json();
-                        data.forEach(coin => {
-                            if (coin.symbol === 'btc') cryptoPrices['BTC'] = coin.current_price;
-                            if (coin.symbol === 'eth') cryptoPrices['ETH'] = coin.current_price;
-                            if (coin.symbol === 'ton') cryptoPrices['TON'] = coin.current_price;
-                            if (coin.symbol === 'usdt') cryptoPrices['USDT'] = coin.current_price;
-                        });
-                        console.log("Fetched live prices:", cryptoPrices);
-                    } catch (error) {
-                        console.error("Error fetching live crypto prices:", error);
-                        // Fallback to placeholders if API call fails
+                        // Decode from URL-safe Base64 and then parse JSON
+                        const decodedBalances = decodeURIComponent(initialBalancesEncoded);
+                        initialBalances = JSON.parse(atob(decodedBalances));
+                        console.log('Initial balances loaded:', initialBalances);
+                    } catch (e) {
+                        console.error("Error decoding or parsing initial balances:", e);
+                        initialBalances = {};
                     }
-                }
-
-                // Call fetchPrices and then display
-                fetchPrices().then(() => {
-                    for (const crypto in balances) {
-                        const amount = parseFloat(balances[crypto]);
-                        const price = cryptoPrices[crypto] || 0;
-                        const valueUSD = amount * price;
-
-                        totalUSD += valueUSD;
-
-                        const listItem = document.createElement('li');
-                        listItem.className = 'flex justify-between items-center bg-gray-50 dark:bg-gray-700 p-3 rounded-md shadow-sm';
-                        listItem.innerHTML = `
-                            <span class="font-medium text-lg">${crypto}:</span>
-                            <span class="font-bold text-blue-700 dark:text-blue-300">${amount.toFixed(8)}</span>
-                            <span class="text-sm text-gray-500 dark:text-gray-400">($${valueUSD.toFixed(2)})</span>
-                        `;
-                        balancesList.appendChild(listItem);
-                    }
-                    document.getElementById('total-balance-display').textContent = `$${totalUSD.toFixed(2)}`;
-                });
-            }
-
-            // Display initial balances if available
-            if (Object.keys(initialBalances).length > 0) {
-                displayBalances(initialBalances);
-            } else {
-                // If no initial balances, show a default message or fetch from bot (not implemented in webapp)
-                document.getElementById('balances-list').innerHTML = '<li class="text-gray-700 dark:text-gray-300 text-center">Балансы не загружены. Пожалуйста, откройте портфель из профиля бота.</li>';
-                document.getElementById('total-balance-display').textContent = 'N/A';
-            }
-
-            // Function to send data back to the bot
-            function sendCommandToBot(actionType) {
-                if (window.Telegram && window.Telegram.WebApp) {
-                    Telegram.WebApp.sendData(JSON.stringify({ action: actionType }));
-                    console.log(`Command sent: ${actionType}`);
                 } else {
-                    console.error("Telegram WebApp object not found. Cannot send data.");
-                    alert("Telegram WebApp API не найдено. Пожалуйста, откройте это в приложении Telegram.");
+                    console.log("No initial balances provided in URL.");
                 }
+
+                // Function to display balances
+                function displayBalances(balances) {
+                    const balancesList = document.getElementById('balances-list');
+                    balancesList.innerHTML = ''; // Clear existing list
+
+                    let totalUSD = 0;
+                    const cryptoPrices = {
+                        'BTC': 70000, // Placeholder, ideally fetch live or get from bot
+                        'ETH': 3500,  // Placeholder
+                        'TON': 7.5,   // Placeholder
+                        'USDT': 1.0    // Stablecoin
+                    };
+
+                    async function fetchPrices() {
+                        try {
+                            const response = await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,tether,toncoin");
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            const data = await response.json();
+                            data.forEach(coin => {
+                                if (coin.symbol === 'btc') cryptoPrices['BTC'] = coin.current_price;
+                                if (coin.symbol === 'eth') cryptoPrices['ETH'] = coin.current_price;
+                                if (coin.symbol === 'ton') cryptoPrices['TON'] = coin.current_price;
+                                if (coin.symbol === 'usdt') cryptoPrices['USDT'] = coin.current_price;
+                            });
+                            console.log("Fetched live prices:", cryptoPrices);
+                        } catch (error) {
+                            console.error("Error fetching live crypto prices:", error);
+                            // Fallback to placeholders if API call fails
+                        }
+                    }
+
+                    fetchPrices().then(() => {
+                        for (const crypto in balances) {
+                            const amount = parseFloat(balances[crypto]);
+                            const price = cryptoPrices[crypto] || 0;
+                            const valueUSD = amount * price;
+
+                            totalUSD += valueUSD;
+
+                            const listItem = document.createElement('li');
+                            listItem.className = 'flex justify-between items-center bg-gray-50 dark:bg-gray-700 p-3 rounded-md shadow-sm';
+                            listItem.innerHTML = `
+                                <span class="font-medium text-lg">${crypto}:</span>
+                                <span class="font-bold text-blue-700 dark:text-blue-300">${amount.toFixed(8)}</span>
+                                <span class="text-sm text-gray-500 dark:text-gray-400">($${valueUSD.toFixed(2)})</span>
+                            `;
+                            balancesList.appendChild(listItem);
+                        }
+                        document.getElementById('total-balance-display').textContent = `$${totalUSD.toFixed(2)}`;
+                    });
+                }
+
+                // Display initial balances if available
+                if (Object.keys(initialBalances).length > 0) {
+                    displayBalances(initialBalances);
+                } else {
+                    document.getElementById('balances-list').innerHTML = '<li class="text-gray-700 dark:text-gray-300 text-center">Балансы не загружены. Пожалуйста, откройте портфель из профиля бота.</li>';
+                    document.getElementById('total-balance-display').textContent = 'N/A';
+                }
+
+                // Function to send data back to the bot
+                function sendCommandToBot(actionType) {
+                    if (window.Telegram && window.Telegram.WebApp) {
+                        Telegram.WebApp.sendData(JSON.stringify({ action: actionType }));
+                        console.log(`Command sent: ${actionType}`);
+                    } else {
+                        console.error("Telegram WebApp object not found during sendData attempt.");
+                        // Removed alert as per instructions
+                    }
+                }
+
+                // Attach event listeners to buttons
+                document.getElementById('deposit-button').addEventListener('click', () => {
+                    sendCommandToBot('start_deposit_flow');
+                });
+
+                document.getElementById('withdraw-button').addEventListener('click', () => {
+                    sendCommandToBot('start_withdraw_flow');
+                });
+
+            } else {
+                // If WebApp API is not available, show an error message.
+                // This might happen if the page is opened outside of Telegram's WebApp environment.
+                document.body.innerHTML = `
+                    <div class="container p-4 text-center mt-8">
+                        <h1 class="text-2xl font-bold text-red-600 mb-4">Ошибка: Telegram WebApp не инициализирован.</h1>
+                        <p class="text-gray-700 dark:text-gray-300">Пожалуйста, откройте эту страницу через встроенный браузер Telegram WebApp.</p>
+                    </div>
+                `;
+                console.error("Telegram WebApp object not found at page load.");
             }
-
-            // Attach event listeners to buttons
-            document.getElementById('deposit-button').addEventListener('click', () => {
-                sendCommandToBot('start_deposit_flow');
-            });
-
-            document.getElementById('withdraw-button').addEventListener('click', () => {
-                sendCommandToBot('start_withdraw_flow');
-            });
-
-        } else {
-            document.body.innerHTML = `
-                <div class="container p-4 text-center mt-8">
-                    <h1 class="text-2xl font-bold text-red-600 mb-4">Ошибка: Telegram WebApp не инициализирован.</h1>
-                    <p class="text-gray-700">Пожалуйста, откройте эту страницу через встроенный браузер Telegram WebApp.</p>
-                </div>
-            `;
-            console.error("Telegram WebApp object not found.");
         }
+
+        // Call initializeWebApp when the DOM is fully loaded.
+        // This is a more reliable way to ensure the WebApp object is ready.
+        document.addEventListener('DOMContentLoaded', initializeWebApp);
     </script>
 </body>
 </html>
