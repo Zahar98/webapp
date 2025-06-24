@@ -111,16 +111,19 @@
     </div>
 
     <script>
-        // Use a function to encapsulate WebApp logic and ensure it runs when ready
+        let webAppCheckInterval; // Declare a variable to hold the interval ID
+
+        // Function to encapsulate WebApp logic
         function initializeWebApp() {
             // Check if Telegram WebApp API is available
             if (window.Telegram && window.Telegram.WebApp) {
-                // Inform Telegram WebApp that the page is ready
-                Telegram.WebApp.ready();
-                // Expand the WebApp to full height immediately
-                Telegram.WebApp.expand();
+                // Clear the interval as WebApp is ready
+                clearInterval(webAppCheckInterval);
 
-                console.log("Telegram WebApp API is ready.");
+                Telegram.WebApp.ready(); // Inform Telegram WebApp that the page is ready
+                Telegram.WebApp.expand(); // Expand the WebApp to full height
+
+                console.log("Telegram WebApp API is ready and initialized.");
 
                 // Get initial data passed from the bot (if any)
                 const urlParams = new URLSearchParams(window.location.search);
@@ -129,7 +132,6 @@
 
                 if (initialBalancesEncoded) {
                     try {
-                        // Decode from URL-safe Base64 and then parse JSON
                         const decodedBalances = decodeURIComponent(initialBalancesEncoded);
                         initialBalances = JSON.parse(atob(decodedBalances));
                         console.log('Initial balances loaded:', initialBalances);
@@ -210,7 +212,6 @@
                         console.log(`Command sent: ${actionType}`);
                     } else {
                         console.error("Telegram WebApp object not found during sendData attempt.");
-                        // Removed alert as per instructions
                     }
                 }
 
@@ -224,21 +225,33 @@
                 });
 
             } else {
-                // If WebApp API is not available, show an error message.
-                // This might happen if the page is opened outside of Telegram's WebApp environment.
+                // If WebApp API is not available after interval, show an error message.
                 document.body.innerHTML = `
                     <div class="container p-4 text-center mt-8">
                         <h1 class="text-2xl font-bold text-red-600 mb-4">Ошибка: Telegram WebApp не инициализирован.</h1>
                         <p class="text-gray-700 dark:text-gray-300">Пожалуйста, откройте эту страницу через встроенный браузер Telegram WebApp.</p>
                     </div>
                 `;
-                console.error("Telegram WebApp object not found at page load.");
+                console.error("Telegram WebApp object not found after multiple checks.");
             }
         }
 
-        // Call initializeWebApp when the DOM is fully loaded.
-        // This is a more reliable way to ensure the WebApp object is ready.
-        document.addEventListener('DOMContentLoaded', initializeWebApp);
+        // Check for Telegram WebApp object every 100ms until it's ready
+        webAppCheckInterval = setInterval(() => {
+            if (window.Telegram && window.Telegram.WebApp) {
+                initializeWebApp();
+            } else {
+                console.log("Waiting for Telegram WebApp object...");
+            }
+        }, 100);
+
+        // Fallback for extremely slow loading or if WebApp never becomes available
+        setTimeout(() => {
+            if (!window.Telegram || !window.Telegram.WebApp) {
+                clearInterval(webAppCheckInterval); // Stop trying
+                initializeWebApp(); // Show the error message
+            }
+        }, 5000); // Wait up to 5 seconds before giving up and showing error
     </script>
 </body>
 </html>
