@@ -397,26 +397,24 @@
     <script>
         const CRYPTOS = ['BTC', 'ETH', 'TON', 'USDT'];
         // Object to store image URLs and background color for each cryptocurrency
-        // Paths are relative to the HTML file, assuming an 'images' folder
+        // Paths are now relative to the HTML file, assuming images are in the root directory
         const cryptoImageInfo = {
             'USDT': {
-                url: './images/usdt.png', // Assuming usdt.png is in an 'images' folder
+                url: './usdt.png', // Image is now expected in the root directory
                 bgColor: '#D0F0C0' // Light green background for USDT
             },
             'BTC': {
-                url: './images/btc.png', // Assuming btc.png is in an 'images' folder
+                url: './btc.png', // Image is now expected in the root directory
                 bgColor: '#FFF3E0' // Light orange background for BTC
             },
             'TON': {
-                url: './images/ton.png', // Assuming ton.png is in an 'images' folder
-                // Note: You provided this as a base64 string previously.
-                // To use it as a local file, you MUST save that base64 string
-                // into a file named 'ton.png' (or whatever you name it)
-                // in your 'images' folder.
+                url: './ton.png', // Image is now expected in the root directory
+                // Note: If this was a base64 string previously, you MUST save it
+                // as a file named 'ton.png' in your repository's root.
                 bgColor: '#D0E0F0' // Light blue background for TON
             },
             'ETH': {
-                url: './images/eth.png', // Assuming eth.png is in an 'images' folder
+                url: './eth.png', // Image is now expected in the root directory
                 bgColor: '#E0E8F8' // Light purple/blue background for ETH
             }
         };
