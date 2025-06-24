@@ -6,7 +6,7 @@
     <title>Мой Кошелек</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Phosphor Icons CDN for crypto icons -->
+    <!-- Phosphor Icons CDN for crypto icons and general UI icons -->
     <script src="https://unpkg.com/@phosphor-icons/web@2.1.1/dist/phosphor.js"></script>
     <script>
         tailwind.config = {
@@ -16,17 +16,21 @@
                         inter: ['Inter', 'sans-serif'],
                     },
                     colors: {
-                        'dark-bg': '#1a1a2e',
-                        'card-bg': '#2a2a4a',
-                        'text-light': '#e0e0e0',
-                        'text-medium': '#b0b0b0',
-                        'green-accent': '#00e676',
-                        'red-accent': '#ff1744',
-                        'border-dark': '#3a3a5a',
-                        'button-dark': '#3a3a5a',
-                        'button-text': '#f0f0f0',
-                        'blue-button': '#4A8AF4', /* Modern blue for deposit/withdraw */
-                        'blue-button-hover': '#3A7AD3',
+                        // Updated colors to match the latest requirements
+                        'dark-bg': '#1b1b1b', // Dark gray background
+                        'card-bg': '#2A2A2A', // Slightly lighter card background
+                        'text-light': '#f2f3f7', // Main text color
+                        'text-medium': '#A0A0A0', // Lighter grey for secondary text (e.g., sub-balance, crypto full name)
+                        'text-faded': '#888888', // For crypto current price (italic)
+                        'green-accent': '#00a176', // Green for all percentage changes
+                        'red-accent': '#FF3B30', // Kept for other potential uses if needed, but not for percentages
+                        'border-dark': '#303030', // Darker border
+                        'button-bg': '#3A3A3A', // Background for action buttons
+                        'button-text': '#FFFFFF', // White text on buttons
+                        'ton-blue': '#0096FF', // Example for TON icon background
+                        'btc-orange': '#F7931A', // Example for BTC icon background
+                        'eth-purple': '#627EEA', // Example for ETH icon background
+                        'usdt-green': '#26A17B', // Example for USDT icon background
                     }
                 }
             }
@@ -45,29 +49,55 @@
             width: 100%;
             margin: 0;
             box-sizing: border-box;
-            overflow-x: hidden; /* Prevent horizontal scrolling */
+            overflow-x: hidden;
         }
 
         .container {
             width: 100%;
-            max-width: 420px; /* Adjusted max-width for typical phone screen */
-            padding: 0 1rem; /* Only horizontal padding */
+            max-width: 420px;
+            padding: 0 1rem;
             box-sizing: border-box;
-            flex-grow: 1; /* Allow container to grow */
+            flex-grow: 1;
             display: flex;
             flex-direction: column;
+            opacity: 0; /* Hidden initially for animation */
+        }
+
+        /* Animation class applied only on initial load via JS */
+        .fade-in-slide-up {
+            animation: fadeInSlideUp 0.8s ease-out forwards;
+            animation-delay: 0.2s;
+        }
+
+        @keyframes fadeInSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .header-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.5rem 1rem;
+            padding: 0.5rem 0;
             width: 100%;
             max-width: 420px;
             box-sizing: border-box;
             color: var(--tw-text-medium);
             margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        .header-bar .ph {
+            font-size: 1.5rem;
+            color: var(--tw-text-medium);
+        }
+        .header-bar span {
+            color: var(--tw-text-light);
         }
 
         .main-balance-card {
@@ -93,7 +123,7 @@
         .action-buttons {
             display: flex;
             justify-content: space-around;
-            gap: 0.5rem; /* Gap between buttons */
+            gap: 0.5rem;
             background-color: var(--tw-bg-card-bg);
             border-radius: 12px;
             padding: 0.75rem 0.5rem;
@@ -105,23 +135,26 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background-color: var(--tw-bg-blue-button); /* Use new blue color */
+            background-color: var(--tw-bg-button-bg);
             border-radius: 8px;
-            padding: 0.8rem 1rem; /* Larger padding */
+            padding: 0.8rem 1rem;
             color: var(--tw-text-button-text);
-            font-size: 0.875rem; /* text-sm */
+            font-size: 0.875rem;
             font-weight: 600;
             text-align: center;
             flex-grow: 1;
             cursor: pointer;
-            transition: background-color 0.2s;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow for buttons */
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-out;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
         .action-button:hover {
-            background-color: var(--tw-bg-blue-button-hover);
+            background-color: #4A4A4A;
+        }
+        .action-button:active {
+            transform: scale(0.98);
         }
         .action-icon {
-            font-size: 1.5rem; /* Larger icons */
+            font-size: 1.5rem;
             margin-bottom: 0.25rem;
         }
 
@@ -154,18 +187,20 @@
             align-items: center;
             flex-grow: 1;
         }
-        .crypto-icon-ph {
-            font-size: 1.75rem; /* Larger Phosphor icon */
+        .crypto-icon-container {
             margin-right: 0.75rem;
-            color: #ffffff; /* White icon color */
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 32px; /* Fixed size for consistency */
-            height: 32px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
-            /* Optional: subtle background color per coin for icons if not using actual image assets */
         }
+        .crypto-icon-container i.ph {
+            font-size: 1.5rem; /* Explicitly set font-size for icon */
+            color: #FFFFFF; /* Explicitly set color for icon */
+        }
+
         .crypto-names {
             display: flex;
             flex-direction: column;
@@ -175,10 +210,14 @@
             font-weight: bold;
             color: var(--tw-text-light);
             font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
         }
         .crypto-name {
             font-size: 0.875rem;
             color: var(--tw-text-medium);
+            font-weight: normal;
         }
 
         .crypto-price-info {
@@ -187,32 +226,29 @@
             align-items: flex-end;
             margin-left: 0.5rem;
             flex-shrink: 0;
-            min-width: 110px; /* Adjusted min-width for price/change */
+            min-width: 110px;
             text-align: right;
         }
         .crypto-current-price {
             font-weight: bold;
-            color: var(--tw-text-light);
+            color: var(--tw-text-faded); /* Updated color for price */
             font-size: 1rem;
+            font-style: italic; /* Added italic style */
         }
         .crypto-change {
             font-size: 0.875rem;
             font-weight: 600;
+            color: var(--tw-text-green-accent); /* All percentage changes are this color */
         }
-        .positive-change {
-            color: var(--tw-text-green-accent);
-        }
-        .negative-change {
-            color: var(--tw-text-red-accent);
-        }
+        /* Removed .positive-change and .negative-change as percentage color is fixed */
 
         .user-crypto-balance {
             display: flex;
             flex-direction: column;
             align-items: flex-end;
-            margin-left: 0.75rem; /* Space between price/change and user balance */
+            margin-left: 0.75rem;
             flex-shrink: 0;
-            min-width: 90px; /* Adjusted min-width for user balance */
+            min-width: 90px;
             text-align: right;
         }
         .user-crypto-amount {
@@ -223,24 +259,6 @@
         .user-crypto-usd {
             font-size: 0.875rem;
             color: var(--tw-text-medium);
-        }
-
-        .manage-button {
-            margin-top: 1.5rem;
-            padding: 0.75rem 1.5rem;
-            background-color: transparent;
-            border: none;
-            color: var(--tw-green-accent);
-            font-weight: 600;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-        .manage-button:hover {
-            background-color: rgba(0, 230, 118, 0.1);
         }
 
         .loading-spinner {
@@ -260,10 +278,10 @@
         /* Responsive adjustments */
         @media (max-width: 450px) {
             .container {
-                padding: 0 0.5rem; /* Less padding on very small screens */
+                padding: 0 0.5rem;
             }
             .action-button {
-                padding: 0.6rem 0.5rem; /* Smaller padding for buttons */
+                padding: 0.6rem 0.5rem;
                 font-size: 0.7rem;
             }
             .action-icon {
@@ -272,10 +290,13 @@
             .crypto-item {
                 padding: 0.6rem 0;
             }
-            .crypto-icon-ph {
-                font-size: 1.5rem;
-                width: 28px;
-                height: 28px;
+            .crypto-icon-container {
+                font-size: 1.3rem;
+                width: 32px;
+                height: 32px;
+            }
+            .crypto-icon-container i.ph {
+                 font-size: 1.3rem;
             }
             .crypto-code, .crypto-current-price, .user-crypto-amount {
                 font-size: 0.9rem;
@@ -291,17 +312,17 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <div class="header-bar">
-        <i class="ph ph-list text-2xl cursor-pointer"></i> <!-- Placeholder for left icon -->
+        <i class="ph ph-list cursor-pointer"></i>
         <div class="flex items-center text-lg font-semibold">
             <span>Основной кошелек</span>
             <i class="ph ph-caret-down text-base ml-1"></i>
         </div>
-        <i class="ph ph-bell text-2xl cursor-pointer"></i> <!-- Placeholder for right icon -->
+        <i class="ph ph-bell cursor-pointer"></i>
     </div>
 
     <div id="loading" class="loading-spinner"></div>
 
-    <div id="content" class="container hidden">
+    <div id="content" class="container">
         <div class="main-balance-card">
             <p id="total-balance-usd" class="balance-value">$0.00</p>
             <p id="total-balance-change" class="sub-balance-value">0,00 $ (0,0%)</p>
@@ -322,19 +343,29 @@
         <div class="crypto-list-card">
             <div id="crypto-list">
                 <!-- Crypto items will be inserted here by JavaScript -->
+                <!-- Each crypto item will have unique IDs for dynamic elements like:
+                     <span id="price-BTC"></span>, <span id="change-BTC"></span>,
+                     <span id="amount-BTC"></span>, <span id="usd-value-BTC"></span>
+                     to prevent full DOM redraw on updates. -->
             </div>
         </div>
 
-        <button class="manage-button">Управлять криптовалютами</button>
+        <!-- Кнопка "Управлять криптовалютами" удалена -->
     </div>
 
     <script>
         const CRYPTOS = ['BTC', 'ETH', 'TON', 'USDT']; 
         const cryptoIcons = {
-            'BTC': 'ph-bitcoin-logo', // Phosphor Icon class
-            'ETH': 'ph-ethereum-logo', // Phosphor Icon class
-            'TON': 'ph-coin', // Placeholder, use a relevant TON icon if available
-            'USDT': 'ph-currency-dollar' // Placeholder for USDT
+            'BTC': 'ph-bitcoin-logo',
+            'ETH': 'ph-ethereum-logo',
+            'TON': 'ph-currency-tnt',
+            'USDT': 'ph-currency-dollar'
+        };
+        const cryptoIconBgColors = {
+            'BTC': 'bg-btc-orange',
+            'ETH': 'bg-eth-purple',
+            'TON': 'bg-ton-blue',
+            'USDT': 'bg-usdt-green'
         };
         const cryptoFullNames = {
             'BTC': 'Bitcoin',
@@ -351,17 +382,17 @@
         const depositButton = document.getElementById('deposit-button');
         const withdrawButton = document.getElementById('withdraw-button');
 
-        let userInitialBalances = {}; // To store balances from start_parameter
+        let userInitialBalances = {}; 
+        let hasAnimated = false; // Flag to control one-time animation
 
         // Initialize Telegram WebApp
         if (window.Telegram && window.Telegram.WebApp) {
             window.Telegram.WebApp.ready();
-            // Get initial balances from start_parameter
             const params = new URLSearchParams(window.location.search);
             const encodedBalances = params.get('initial_balances');
             if (encodedBalances) {
                 try {
-                    const decodedBalances = atob(encodedBalances.replace(/-/g, '+').replace(/_/g, '/')); // Base64 URL safe decode
+                    const decodedBalances = atob(encodedBalances.replace(/-/g, '+').replace(/_/g, '/'));
                     userInitialBalances = JSON.parse(decodedBalances);
                     console.log("Initial balances loaded from bot:", userInitialBalances);
                 } catch (e) {
@@ -401,12 +432,10 @@
         // --- Data Fetching (Live Prices from CoinGecko, User Balances from initial load) ---
         async function fetchAndRenderWalletData() {
             loadingDiv.classList.remove('hidden');
-            contentDiv.classList.add('hidden');
+            // contentDiv.classList.add('hidden'); // No longer hide on every update
 
-            // 1. Get user balances (from userInitialBalances loaded at WebApp start)
             const userBalances = userInitialBalances;
 
-            // 2. Fetch real-time prices and 24h changes from CoinGecko
             let cryptoPrices = {};
             let crypto24hChanges = {};
             try {
@@ -414,8 +443,7 @@
                 const data = await response.json();
                 
                 data.forEach(coin => {
-                    const id = coin.id; // Use ID from CoinGecko
-                    // Map CoinGecko IDs to our CRYPTOS symbols
+                    const id = coin.id;
                     if (id === 'bitcoin') {
                         cryptoPrices['BTC'] = coin.current_price;
                         crypto24hChanges['BTC'] = coin.price_change_percentage_24h;
@@ -431,28 +459,25 @@
                     }
                 });
 
-                // Fallback for USDT if price is missing or 0
                 if (!cryptoPrices['USDT']) cryptoPrices['USDT'] = 1.0;
                 if (crypto24hChanges['USDT'] === null || crypto24hChanges['USDT'] === undefined) crypto24hChanges['USDT'] = 0.0;
 
             } catch (error) {
                 console.error('Error fetching crypto prices/changes from CoinGecko:', error);
-                // Fallback prices if API fails - use reasonable defaults
                 cryptoPrices = {
                     'BTC': 70000, 'ETH': 3500, 'TON': 2.5, 'USDT': 1.0
                 };
                 crypto24hChanges = {
-                    'BTC': (Math.random() * 10 - 5), // Random change for demo
+                    'BTC': (Math.random() * 10 - 5),
                     'ETH': (Math.random() * 10 - 5),
                     'TON': (Math.random() * 10 - 5),
                     'USDT': (Math.random() * 0.1 - 0.05)
                 };
             }
             
-            // Calculate total balance in USD and overall portfolio change
             let totalUSD = 0;
-            let totalChangeValue = 0; // Absolute change in USD
-            let initialTotalUSD = 0; // For overall percentage calculation
+            let totalChangeValue = 0;
+            let initialTotalUSD = 0;
 
             for (const crypto of CRYPTOS) {
                 const balance = userBalances[crypto] || 0;
@@ -461,12 +486,11 @@
 
                 totalUSD += balance * price;
                 
-                // Calculate initial value (24h ago) for total portfolio change
                 if (changePct !== 0) {
                     const price24hAgo = price / (1 + changePct / 100);
                     initialTotalUSD += balance * price24hAgo;
                 } else {
-                    initialTotalUSD += balance * price; // If no change, initial value is current
+                    initialTotalUSD += balance * price;
                 }
             }
             
@@ -477,53 +501,76 @@
             totalChangeValue = totalUSD - initialTotalUSD;
 
 
-            // Update UI elements
             totalBalanceUsd.textContent = `$${formatCurrency(totalUSD)}`;
             totalBalanceChange.textContent = `${totalChangeValue >= 0 ? '+' : ''}${formatCurrency(totalChangeValue)} $ (${formatPercentage(overallChangePct)})`;
+            // The class for total balance change remains for consistency, but color is now fixed by 'text-medium'
             totalBalanceChange.className = `sub-balance-value ${overallChangePct >= 0 ? 'positive-change' : 'negative-change'}`;
 
-            cryptoList.innerHTML = ''; // Clear previous items
+            // Check if crypto list items already exist to update them, or create if first render
+            if (cryptoList.children.length === 0) { // First render, create elements
+                for (const crypto of CRYPTOS) {
+                    const balance = userBalances[crypto] || 0;
+                    const price = cryptoPrices[crypto] || 0;
+                    const change = crypto24hChanges[crypto] || 0;
 
-            for (const crypto of CRYPTOS) {
-                const balance = userBalances[crypto] || 0;
-                const price = cryptoPrices[crypto] || 0;
-                const change = crypto24hChanges[crypto] || 0;
-
-                const cryptoItem = document.createElement('div');
-                cryptoItem.className = 'crypto-item';
-                cryptoItem.innerHTML = `
-                    <div class="crypto-info">
-                        <i class="ph ${cryptoIcons[crypto]} crypto-icon-ph"></i>
-                        <div class="crypto-names">
-                            <span class="crypto-code">${crypto} <span class="crypto-name">${cryptoFullNames[crypto]}</span></span>
-                            <span class="crypto-current-price">$${formatCurrency(price)} <span class="crypto-change ${change >= 0 ? 'positive-change' : 'negative-change'}">${formatPercentage(change)}</span></span>
+                    const cryptoItem = document.createElement('div');
+                    cryptoItem.className = 'crypto-item';
+                    cryptoItem.id = `crypto-item-${crypto}`; // Assign ID to parent item for easy lookup
+                    cryptoItem.innerHTML = `
+                        <div class="crypto-info">
+                            <div class="crypto-icon-container ${cryptoIconBgColors[crypto]}">
+                                <i class="ph ${cryptoIcons[crypto]}"></i>
+                            </div>
+                            <div class="crypto-names">
+                                <span class="crypto-code">${crypto} <span class="crypto-name">${cryptoFullNames[crypto]}</span></span>
+                                <!-- Changed structure: price and change are separate spans -->
+                                <span class="crypto-current-price">$<span id="price-${crypto}">${formatCurrency(price)}</span> <span id="change-${crypto}" class="crypto-change">${formatPercentage(change)}</span></span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="user-crypto-balance">
-                        <span class="user-crypto-amount">${balance.toLocaleString(undefined, { maximumFractionDigits: 8 })}</span>
-                        <span class="user-crypto-usd">$${formatCurrency(balance * price)}</span>
-                    </div>
-                `;
-                cryptoList.appendChild(cryptoItem);
+                        <div class="user-crypto-balance">
+                            <span id="amount-${crypto}" class="user-crypto-amount">${balance.toLocaleString(undefined, { maximumFractionDigits: 8 })}</span>
+                            <span id="usd-value-${crypto}" class="user-crypto-usd">$${formatCurrency(balance * price)}</span>
+                        </div>
+                    `;
+                    cryptoList.appendChild(cryptoItem);
+                }
+            } else { // Subsequent renders, update existing elements
+                for (const crypto of CRYPTOS) {
+                    const balance = userBalances[crypto] || 0;
+                    const price = cryptoPrices[crypto] || 0;
+                    const change = crypto24hChanges[crypto] || 0;
+
+                    // Update textContent for specific IDs
+                    document.getElementById(`price-${crypto}`).textContent = formatCurrency(price);
+                    document.getElementById(`change-${crypto}`).textContent = formatPercentage(change);
+                    document.getElementById(`amount-${crypto}`).textContent = balance.toLocaleString(undefined, { maximumFractionDigits: 8 });
+                    document.getElementById(`usd-value-${crypto}`).textContent = formatCurrency(balance * price);
+                }
             }
 
             loadingDiv.classList.add('hidden');
-            contentDiv.classList.remove('hidden');
+            // Apply animation class only once, during initial load
+            if (!hasAnimated) {
+                contentDiv.classList.remove('hidden'); // Ensure it's visible before animation starts
+                contentDiv.classList.add('fade-in-slide-up');
+                hasAnimated = true;
+            } else {
+                contentDiv.classList.remove('hidden'); // Ensure it stays visible for subsequent refreshes
+            }
         }
 
         // --- Event Listeners for Buttons ---
         if (window.Telegram && window.Telegram.WebApp) {
             depositButton.addEventListener('click', () => {
                 window.Telegram.WebApp.sendData(JSON.stringify({ action: "start_deposit_flow" }));
-                window.Telegram.WebApp.close(); // Close WebApp to return to bot chat
+                window.Telegram.WebApp.close();
             });
 
             withdrawButton.addEventListener('click', () => {
                 window.Telegram.WebApp.sendData(JSON.stringify({ action: "start_withdraw_flow" }));
-                window.Telegram.WebApp.close(); // Close WebApp to return to bot chat
+                window.Telegram.WebApp.close();
             });
         } else {
-            // For standalone testing, log clicks
             depositButton.addEventListener('click', () => {
                 alert("Пополнение: Эта функция работает через Telegram Bot.");
                 console.log("Deposit button clicked (standalone)");
@@ -533,7 +580,6 @@
                 console.log("Withdraw button clicked (standalone)");
             });
         }
-
 
         // Initial render
         fetchAndRenderWalletData();
