@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>My Wallet</title>
+    <title>Мой Кошелек</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -14,7 +14,7 @@
                         inter: ['Inter', 'sans-serif'],
                     },
                     colors: {
-                        // These will be overridden by Telegram theme colors if available
+                        // Эти цвета будут переопределены параметрами темы Telegram, если доступны
                         'var-bg': 'var(--tg-theme-bg-color, #ffffff)',
                         'var-text': 'var(--tg-theme-text-color, #000000)',
                         'var-hint': 'var(--tg-theme-hint-color, #999999)',
@@ -23,10 +23,10 @@
                         'var-button-text': 'var(--tg-theme-button-text-color, #ffffff)',
                         'var-secondary-bg': 'var(--tg-theme-secondary-bg-color, #f0f0f0)',
                         'var-header-bg': 'var(--tg-theme-header-bg-color', '#ffffff)',
-                        'var-accent-text': 'var(--tg-theme-accent-text-color', '#00e676)', // Custom for positive change
-                        'var-destructive-text': 'var(--tg-theme-destructive-text-color', '#ff1744)', // Custom for negative change
+                        'var-accent-text': 'var(--tg-theme-accent-text-color', '#00e676)', // Пользовательский для положительных изменений
+                        'var-destructive-text': 'var(--tg-theme-destructive-text-color', '#ff1744)', // Пользовательский для отрицательных изменений
                         
-                        // Default Tailwind theme colors (will be less used directly)
+                        // Резервные цвета Tailwind (будут использоваться реже напрямую)
                         'dark-bg-fallback': '#1a1a2e',
                         'card-bg-fallback': '#2a2a4a',
                         'text-light-fallback': '#e0e0e0',
@@ -44,7 +44,7 @@
         }
     </script>
     <style>
-        /* Define CSS variables with fallbacks for standalone browsing */
+        /* Определение переменных CSS с резервными значениями для автономного просмотра */
         :root {
             --tg-theme-bg-color: #ffffff;
             --tg-theme-text-color: #000000;
@@ -53,15 +53,18 @@
             --tg-theme-button-color: #007bff;
             --tg-theme-button-text-color: #ffffff;
             --tg-theme-secondary-bg-color: #f0f0f0;
-            --tg-theme-header-bg-color: #ffffff; /* Assuming header matches main bg or secondary bg */
-            /* Custom semantic colors derived from Telegram's theme params for better UI consistency */
+            --tg-theme-header-bg-color: #ffffff; /* Предполагаем, что заголовок соответствует основному или второстепенному фону */
+            /* Пользовательские семантические цвета, полученные из параметров темы Telegram для лучшей согласованности пользовательского интерфейса */
             --tg-color-card-bg: var(--tg-theme-secondary-bg-color);
-            --tg-color-border: var(--tg-theme-hint-color); /* Using hint for border for subtle contrast */
-            --tg-color-positive: #00e676; /* Default green */
-            --tg-color-negative: #ff1744; /* Default red */
+            --tg-color-border: var(--tg-theme-hint-color); /* Используем цвет подсказки для границы для тонкого контраста */
+            --tg-color-positive: #00e676; /* Зеленый по умолчанию */
+            --tg-color-negative: #ff1744; /* Красный по умолчанию */
+            /* Дополнительные цвета для лучшего контраста карточек в темной теме */
+            --card-border-color-dark: rgba(255, 255, 255, 0.1); /* Легкий белый для темного режима */
+            --card-border-color-light: rgba(0, 0, 0, 0.05); /* Легкий черный для светлого режима */
         }
 
-        /* Dynamically apply Telegram WebApp theme colors */
+        /* Динамическое применение цветов темы Telegram WebApp */
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--tg-theme-bg-color);
@@ -74,8 +77,8 @@
             width: 100%;
             margin: 0;
             box-sizing: border-box;
-            overflow-x: hidden; /* Prevent horizontal scrolling */
-            transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for theme change */
+            overflow-x: hidden; /* Предотвращаем горизонтальную прокрутку */
+            transition: background-color 0.3s ease, color 0.3s ease; /* Плавный переход для смены темы */
         }
 
         .container {
@@ -96,7 +99,7 @@
             width: 100%;
             max-width: 420px;
             box-sizing: border-box;
-            color: var(--tg-theme-hint-color); /* Using hint color for header icons/text */
+            color: var(--tg-theme-hint-color); /* Используем цвет подсказки для иконок/текста заголовка */
             margin-bottom: 1rem;
         }
 
@@ -107,12 +110,14 @@
             border-radius: 12px;
             padding: 1.5rem;
             margin-bottom: 1rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Lighter shadow for adaptability */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Более светлая тень для адаптивности */
             text-align: center;
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease; /* Плавный переход для границы */
+            /* Добавляем границу для контраста */
+            border: 1px solid var(--card-border-color); /* Будет динамически установлен JS */
         }
         .main-balance-card {
-            padding-bottom: 0.75rem; /* Adjust padding for cards */
+            padding-bottom: 0.75rem; /* Регулировка отступов для карточек */
         }
 
         .balance-value {
@@ -151,14 +156,14 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
         .action-button:hover {
-            filter: brightness(1.1); /* Slightly brighter on hover */
+            filter: brightness(1.1); /* Немного ярче при наведении */
         }
         .action-icon {
-            width: 24px; /* Ensure consistent size for action icons */
+            width: 24px; /* Обеспечиваем постоянный размер для иконок действий */
             height: 24px;
             margin-bottom: 0.25rem;
-            fill: none; /* No fill for stroke icons */
-            stroke: currentColor; /* Inherits text color */
+            fill: none; /* Без заливки для контурных иконок */
+            stroke: currentColor; /* Наследует цвет текста */
             stroke-width: 2;
             stroke-linecap: round;
             stroke-linejoin: round;
@@ -190,9 +195,9 @@
             align-items: center;
             flex-grow: 1;
         }
-        /* Styling for the crypto icon container (circle with background) */
+        /* Стилизация контейнера иконки криптовалюты (круг с фоном) */
         .crypto-icon-container {
-            width: 36px; /* Slightly larger for better visual impact */
+            width: 36px; /* Немного больше для лучшего визуального эффекта */
             height: 36px;
             margin-right: 0.75rem;
             border-radius: 50%;
@@ -200,14 +205,14 @@
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            background-color: var(--icon-bg-color); /* Dynamically set background color */
+            background-color: var(--icon-bg-color); /* Динамически устанавливаем цвет фона */
         }
-        /* Styling for the PNG inside the circle */
+        /* Стилизация PNG внутри круга */
         .crypto-png-inside-circle {
-            width: 28px; /* Slightly smaller than container to give padding effect */
+            width: 28px; /* Немного меньше контейнера для эффекта отступа */
             height: 28px;
-            object-fit: contain; /* Ensures the image fits without cropping */
-            border-radius: 50%; /* If PNGs are square, makes them round */
+            object-fit: contain; /* Обеспечивает вписывание изображения без обрезки */
+            border-radius: 50%; /* Если PNG квадратные, делает их круглыми */
         }
         .crypto-names {
             display: flex;
@@ -273,7 +278,7 @@
             padding: 0.75rem 1.5rem;
             background-color: transparent;
             border: none;
-            color: var(--tg-theme-link-color); /* Use link color for this button */
+            color: var(--tg-theme-link-color); /* Используем цвет ссылки для этой кнопки */
             font-weight: 600;
             border-radius: 8px;
             cursor: pointer;
@@ -283,12 +288,12 @@
             text-align: center;
         }
         .manage-button:hover {
-            background-color: rgba(0, 123, 255, 0.1); /* Lighter hover for link color */
+            background-color: rgba(0, 123, 255, 0.1); /* Более светлый фон при наведении для цвета ссылки */
         }
 
         .loading-spinner {
             border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid var(--tg-theme-link-color); /* Use link color for spinner */
+            border-top: 4px solid var(--tg-theme-link-color); /* Используем цвет ссылки для спиннера */
             border-radius: 50%;
             width: 30px;
             height: 30px;
@@ -300,7 +305,27 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Responsive adjustments */
+        /* Сообщение о статусе (для кнопок) */
+        .status-message {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .status-message.show {
+            opacity: 1;
+        }
+
+
+        /* Адаптивные настройки */
         @media (max-width: 450px) {
             .container {
                 padding: 0 0.5rem;
@@ -315,11 +340,11 @@
             .crypto-item {
                 padding: 0.6rem 0;
             }
-            .crypto-icon-container { /* Adjustments for crypto icon containers on smaller screens */
+            .crypto-icon-container { /* Настройки для контейнеров иконок криптовалют на маленьких экранах */
                 width: 32px;
                 height: 32px;
             }
-            .crypto-png-inside-circle { /* Adjustments for PNG inside on smaller screens */
+            .crypto-png-inside-circle { /* Настройки для PNG внутри на маленьких экранах */
                 width: 24px;
                 height: 24px;
             }
@@ -337,28 +362,27 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <div class="header-bar">
-        <!-- Menu Icon - Simple SVG -->
+        <!-- Иконка меню - простой SVG -->
         <svg class="w-6 h-6 text-current cursor-pointer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="3" y1="12" x2="21" y2="12"></line>
             <line x1="3" y1="6" x2="21" y2="6"></line>
             <line x1="3" y1="18" x2="21" y2="18"></line>
         </svg>
         <div class="flex items-center text-lg font-semibold">
-            <span>Main Wallet</span>
-            <!-- Caret Down Icon - Simple SVG -->
+            <span>Основной Кошелек</span>
+            <!-- Иконка стрелки вниз - простой SVG -->
             <svg class="w-4 h-4 ml-1 text-current" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
         </div>
-        <!-- Bell Icon - Simple SVG -->
+        <!-- Иконка колокольчика - простой SVG -->
         <svg class="w-6 h-6 text-current cursor-pointer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
             <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
         </svg>
     </div>
 
-    <div id="loading" class="loading-spinner"></div>
-
+    <div id="initial-loading" class="loading-spinner"></div>
     <div id="content" class="container hidden">
         <div class="main-balance-card">
             <p id="total-balance-usd" class="balance-value">$0.00</p>
@@ -367,55 +391,56 @@
 
         <div class="action-buttons">
             <button id="deposit-button" class="action-button">
-                <!-- Deposit Icon - Simple SVG -->
+                <!-- Иконка пополнения - простой SVG -->
                 <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="12" y1="19" x2="12" y2="5"></line>
                     <polyline points="5 12 12 5 19 12"></polyline>
                 </svg>
-                <span>Deposit</span>
+                <span>Пополнить</span>
             </button>
             <button id="withdraw-button" class="action-button">
-                <!-- Withdraw Icon - Simple SVG -->
+                <!-- Иконка вывода - простой SVG -->
                 <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="12" y1="5" x2="12" y2="19"></line>
                     <polyline points="19 12 12 19 5 12"></polyline>
                 </svg>
-                <span>Withdraw</span>
+                <span>Вывести</span>
             </button>
         </div>
 
-        <h2 class="crypto-list-header">Cryptocurrency</h2>
+        <h2 class="crypto-list-header">Криптовалюта</h2>
         <div class="crypto-list-card">
             <div id="crypto-list">
-                <!-- Crypto items will be inserted here by JavaScript -->
+                <!-- Элементы криптовалют будут вставлены сюда JavaScript'ом -->
             </div>
         </div>
 
-        <button class="manage-button">Manage Cryptocurrencies</button>
+        <button class="manage-button">Управление криптовалютами</button>
     </div>
+
+    <!-- Сообщение о статусе (будет использоваться для временных уведомлений) -->
+    <div id="status-message" class="status-message"></div>
 
     <script>
         const CRYPTOS = ['BTC', 'ETH', 'TON', 'USDT'];
-        // Object to store image URLs and background color for each cryptocurrency
-        // Paths are now relative to the HTML file, assuming images are in the root directory
+        // Объект для хранения URL-адресов изображений и цвета фона для каждой криптовалюты
+        // Пути относятся к HTML-файлу, предполагая, что изображения находятся в корневом каталоге
         const cryptoImageInfo = {
             'USDT': {
-                url: './usdt.png', // Image is now expected in the root directory
-                bgColor: '#D0F0C0' // Light green background for USDT
+                url: './usdt.png', 
+                bgColor: '#D0F0C0' // Светло-зеленый фон для USDT
             },
             'BTC': {
-                url: './btc.png', // Image is now expected in the root directory
-                bgColor: '#FFF3E0' // Light orange background for BTC
+                url: './btc.png', 
+                bgColor: '#FFF3E0' // Светло-оранжевый фон для BTC
             },
             'TON': {
-                url: './ton.png', // Image is now expected in the root directory
-                // Note: If this was a base64 string previously, you MUST save it
-                // as a file named 'ton.png' in your repository's root.
-                bgColor: '#D0E0F0' // Light blue background for TON
+                url: './ton.png', 
+                bgColor: '#D0E0F0' // Светло-голубой фон для TON
             },
             'ETH': {
-                url: './eth.png', // Image is now expected in the root directory
-                bgColor: '#E0E8F8' // Light purple/blue background for ETH
+                url: './eth.png', 
+                bgColor: '#E0E8F8' // Светло-фиолетовый/голубой фон для ETH
             }
         };
         const cryptoFullNames = {
@@ -425,23 +450,25 @@
             'USDT': 'Tether'
         };
 
-        const loadingDiv = document.getElementById('loading');
+        const initialLoadingDiv = document.getElementById('initial-loading');
         const contentDiv = document.getElementById('content');
         const totalBalanceUsd = document.getElementById('total-balance-usd');
         const totalBalanceChange = document.getElementById('total-balance-change');
         const cryptoList = document.getElementById('crypto-list');
         const depositButton = document.getElementById('deposit-button');
         const withdrawButton = document.getElementById('withdraw-button');
+        const statusMessageDiv = document.getElementById('status-message');
 
-        let userInitialBalances = {}; // To store balances from start_parameter
 
-        // Function to apply Telegram theme parameters
+        let userInitialBalances = {}; // Для хранения балансов из start_parameter
+
+        // Функция для применения параметров темы Telegram
         function applyTelegramTheme() {
             if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.themeParams) {
                 const themeParams = window.Telegram.WebApp.themeParams;
                 const root = document.documentElement;
 
-                // Set primary Telegram theme colors
+                // Устанавливаем основные цвета темы Telegram
                 root.style.setProperty('--tg-theme-bg-color', themeParams.bg_color);
                 root.style.setProperty('--tg-theme-text-color', themeParams.text_color);
                 root.style.setProperty('--tg-theme-hint-color', themeParams.hint_color);
@@ -449,66 +476,89 @@
                 root.style.setProperty('--tg-theme-button-color', themeParams.button_color);
                 root.style.setProperty('--tg-theme-button-text-color', themeParams.button_text_color);
                 root.style.setProperty('--tg-theme-secondary-bg-color', themeParams.secondary_bg_color);
-                // Assume header background matches secondary background or main background
                 root.style.setProperty('--tg-theme-header-bg-color', themeParams.secondary_bg_color || themeParams.bg_color);
 
-                // Derive custom semantic colors for UI elements
-                // Attempt to deduce positive/negative colors based on common patterns, or use defaults
+                // Выводим пользовательские семантические цвета для элементов пользовательского интерфейса
                 if (themeParams.accent_text_color) {
                     root.style.setProperty('--tg-color-positive', themeParams.accent_text_color);
-                }
-                // No specific destructive color in themeParams, use button color or a fixed red
-                if (themeParams.destructive_text_color) { // If future versions include it
-                    root.style.setProperty('--tg-color-negative', themeParams.destructive_text_color);
                 } else {
-                    root.style.setProperty('--tg-color-negative', '#ff3b30'); // A common iOS red
+                    root.style.setProperty('--tg-color-positive', '#00e676'); // Резервный зеленый
                 }
                 
-                // Border color could be hint_color or a slightly darker/lighter version of secondary_bg_color
+                if (themeParams.destructive_text_color) {
+                    root.style.setProperty('--tg-color-negative', themeParams.destructive_text_color);
+                } else {
+                    root.style.setProperty('--tg-color-negative', '#ff3b30'); // Резервный красный
+                }
+                
                 root.style.setProperty('--tg-color-card-bg', themeParams.secondary_bg_color);
                 root.style.setProperty('--tg-color-border', themeParams.hint_color);
 
-                console.log("Telegram Theme Params applied:", themeParams);
+                // Устанавливаем цвет границы карточек для контраста в зависимости от темы
+                if (themeParams.bg_color && isLightColor(themeParams.bg_color)) {
+                    // Светлая тема
+                    root.style.setProperty('--card-border-color', 'var(--card-border-color-light)');
+                } else {
+                    // Темная тема или неизвестный цвет (предполагаем темный)
+                    root.style.setProperty('--card-border-color', 'var(--card-border-color-dark)');
+                }
+
+                console.log("Параметры темы Telegram применены:", themeParams);
             } else {
-                console.warn("Telegram WebApp themeParams not found. Using default colors.");
+                console.warn("Объект themeParams Telegram WebApp не найден. Используются цвета по умолчанию.");
+                // Устанавливаем цвет границы по умолчанию для автономного режима (светлый фон)
+                document.documentElement.style.setProperty('--card-border-color', 'var(--card-border-color-light)');
             }
         }
 
+        // Вспомогательная функция для определения, является ли цвет светлым
+        function isLightColor(hexColor) {
+            if (!hexColor) return true; // По умолчанию считаем светлым, если нет цвета
+            const r = parseInt(hexColor.slice(1, 3), 16);
+            const g = parseInt(hexColor.slice(3, 5), 16);
+            const b = parseInt(hexColor.slice(5, 7), 16);
+            // Формула для яркости (ITU-R BT.709)
+            const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+            return brightness > 128; // Порог для определения светлого/темного
+        }
 
-        // Initialize Telegram WebApp
+
+        // Инициализация Telegram WebApp
         if (window.Telegram && window.Telegram.WebApp) {
             window.Telegram.WebApp.ready();
-            applyTelegramTheme(); // Apply theme colors on load
-            // Listen for theme changes (e.g., user switches dark/light mode)
+            applyTelegramTheme(); // Применяем цвета темы при загрузке
+            // Слушаем изменения темы (например, пользователь переключает темный/светлый режим)
             window.Telegram.WebApp.onEvent('themeChanged', applyTelegramTheme);
 
-            // Get initial balances from start_parameter
+            // Получаем начальные балансы из start_parameter
             const params = new URLSearchParams(window.location.search);
             const encodedBalances = params.get('initial_balances');
             if (encodedBalances) {
                 try {
-                    // Base64 URL safe decode: replace - with +, _ with /
+                    // Base64 URL safe decode: заменяем - на +, _ на /
                     const decodedBalances = atob(encodedBalances.replace(/-/g, '+').replace(/_/g, '/'));
                     userInitialBalances = JSON.parse(decodedBalances);
-                    console.log("Initial balances loaded from bot:", userInitialBalances);
+                    console.log("Начальные балансы загружены из бота:", userInitialBalances);
                 } catch (e) {
-                    console.error("Error decoding initial balances:", e);
+                    console.error("Ошибка декодирования начальных балансов:", e);
                 }
             } else {
-                console.warn("No initial balances received from bot via start_parameter.");
+                console.warn("Начальные балансы не получены от бота через start_parameter.");
             }
         } else {
-            console.warn("Telegram WebApp object not found. Running in standalone mode.");
-            // Simulate initial balances for standalone testing if not in Telegram WebApp
+            console.warn("Объект Telegram WebApp не найден. Работает в автономном режиме.");
+            // Имитируем начальные балансы для автономного тестирования, если не в Telegram WebApp
             userInitialBalances = {
                 'BTC': 0.005,
                 'ETH': 0.5,
                 'TON': 150,
                 'USDT': 750
             };
+            // Устанавливаем цвет границы по умолчанию для автономного режима (светлый фон)
+            document.documentElement.style.setProperty('--card-border-color', 'var(--card-border-color-light)');
         }
 
-        // Helper function to format numbers to currency
+        // Вспомогательная функция для форматирования чисел в валюту
         function formatCurrency(value) {
             if (typeof value !== 'number' || isNaN(value)) {
                 return '0.00';
@@ -516,7 +566,7 @@
             return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
-        // Helper function to format percentages
+        // Вспомогательная функция для форматирования процентов
         function formatPercentage(value) {
             if (typeof value !== 'number' || isNaN(value)) {
                 return '0.00%';
@@ -525,15 +575,27 @@
             return `${sign}${value.toFixed(2)}%`;
         }
 
-        // --- Data Fetching (Live Prices from CoinGecko, User Balances from initial load) ---
-        async function fetchAndRenderWalletData() {
-            loadingDiv.classList.remove('hidden');
-            contentDiv.classList.add('hidden');
+        // Функция для отображения временного сообщения о статусе
+        function showStatusMessage(message, duration = 2000) {
+            statusMessageDiv.textContent = message;
+            statusMessageDiv.classList.add('show');
+            setTimeout(() => {
+                statusMessageDiv.classList.remove('show');
+            }, duration);
+        }
 
-            // 1. Get user balances (from userInitialBalances loaded at WebApp start)
+        // --- Получение данных (актуальные цены с CoinGecko, балансы пользователя из начальной загрузки) ---
+        async function fetchAndRenderWalletData() {
+            // При первом запуске скрываем спиннер и показываем контент
+            if (contentDiv.classList.contains('hidden')) {
+                initialLoadingDiv.classList.add('hidden');
+                contentDiv.classList.remove('hidden');
+            }
+
+            // 1. Получаем балансы пользователя (из userInitialBalances, загруженных при запуске WebApp)
             const userBalances = userInitialBalances;
 
-            // 2. Fetch real-time prices and 24h changes from CoinGecko
+            // 2. Получаем цены в реальном времени и изменения за 24 часа с CoinGecko
             let cryptoPrices = {};
             let crypto24hChanges = {};
             try {
@@ -541,8 +603,8 @@
                 const data = await response.json();
                 
                 data.forEach(coin => {
-                    const id = coin.id; // Use ID from CoinGecko
-                    // Map CoinGecko IDs to our CRYPTOS symbols
+                    const id = coin.id; // Используем ID с CoinGecko
+                    // Сопоставляем ID CoinGecko с нашими символами CRYPTOS
                     if (id === 'bitcoin') {
                         cryptoPrices['BTC'] = coin.current_price;
                         crypto24hChanges['BTC'] = coin.price_change_percentage_24h;
@@ -558,28 +620,28 @@
                     }
                 });
 
-                // Fallback for USDT if price is missing or 0
+                // Резерв для USDT, если цена отсутствует или равна 0
                 if (!cryptoPrices['USDT']) cryptoPrices['USDT'] = 1.0;
                 if (crypto24hChanges['USDT'] === null || crypto24hChanges['USDT'] === undefined) crypto24hChanges['USDT'] = 0.0;
 
             } catch (error) {
-                console.error('Error fetching crypto prices/changes from CoinGecko:', error);
-                // Fallback prices if API fails - use reasonable defaults
+                console.error('Ошибка при получении цен/изменений криптовалют с CoinGecko:', error);
+                // Резервные цены, если API не работает - используем разумные значения по умолчанию
                 cryptoPrices = {
                     'BTC': 70000, 'ETH': 3500, 'TON': 2.5, 'USDT': 1.0
                 };
                 crypto24hChanges = {
-                    'BTC': (Math.random() * 10 - 5), // Random change for demo
+                    'BTC': (Math.random() * 10 - 5), // Случайное изменение для демонстрации
                     'ETH': (Math.random() * 10 - 5),
                     'TON': (Math.random() * 10 - 5),
                     'USDT': (Math.random() * 0.1 - 0.05)
                 };
             }
             
-            // Calculate total balance in USD and overall portfolio change
+            // Расчет общего баланса в USD и общего изменения портфеля
             let totalUSD = 0;
-            let totalChangeValue = 0; // Absolute change in USD
-            let initialTotalUSD = 0; // For overall percentage calculation
+            let totalChangeValue = 0; // Абсолютное изменение в USD
+            let initialTotalUSD = 0; // Для общего расчета процентов
 
             for (const crypto of CRYPTOS) {
                 const balance = userBalances[crypto] || 0;
@@ -588,12 +650,12 @@
 
                 totalUSD += balance * price;
                 
-                // Calculate initial value (24h ago) for total portfolio change
+                // Расчет начального значения (24 часа назад) для общего изменения портфеля
                 if (changePct !== 0) {
                     const price24hAgo = price / (1 + changePct / 100);
                     initialTotalUSD += balance * price24hAgo;
                 } else {
-                    initialTotalUSD += balance * price; // If no change, initial value is current
+                    initialTotalUSD += balance * price; // Если нет изменений, начальное значение равно текущему
                 }
             }
             
@@ -604,12 +666,12 @@
             totalChangeValue = totalUSD - initialTotalUSD;
 
 
-            // Update UI elements
+            // Обновляем элементы пользовательского интерфейса
             totalBalanceUsd.textContent = `$${formatCurrency(totalUSD)}`;
             totalBalanceChange.textContent = `${totalChangeValue >= 0 ? '+' : ''}${formatCurrency(totalChangeValue)} $ (${formatPercentage(overallChangePct)})`;
             totalBalanceChange.className = `sub-balance-value ${overallChangePct >= 0 ? 'positive-change' : 'negative-change'}`;
 
-            cryptoList.innerHTML = ''; // Clear previous items
+            cryptoList.innerHTML = ''; // Очищаем предыдущие элементы
 
             for (const crypto of CRYPTOS) {
                 const balance = userBalances[crypto] || 0;
@@ -620,7 +682,7 @@
                 cryptoItem.className = 'crypto-item';
                 cryptoItem.innerHTML = `
                     <div class="crypto-info">
-                        <!-- Cryptocurrency icon using a styled PNG inside a colored circle -->
+                        <!-- Иконка криптовалюты с использованием стилизованного PNG внутри цветного круга -->
                         <span class="crypto-icon-container" style="background-color: ${cryptoImageInfo[crypto].bgColor};">
                             <img src="${cryptoImageInfo[crypto].url}" alt="${crypto} icon" class="crypto-png-inside-circle" onerror="this.onerror=null;this.src='https://placehold.co/28x28/808080/FFFFFF?text=${crypto}'">
                         </span>
@@ -636,42 +698,41 @@
                 `;
                 cryptoList.appendChild(cryptoItem);
             }
-
-            loadingDiv.classList.add('hidden');
-            contentDiv.classList.remove('hidden');
         }
 
-        // --- Event Listeners for Buttons --
+        // --- Обработчики событий для кнопок ---
         if (window.Telegram && window.Telegram.WebApp) {
             depositButton.addEventListener('click', () => {
+                showStatusMessage("Отправка запроса на пополнение...");
                 window.Telegram.WebApp.sendData(JSON.stringify({ action: "start_deposit_flow" }));
-                // Add a small delay before closing to ensure data is sent
+                // Добавляем небольшую задержку перед закрытием, чтобы убедиться, что данные отправлены
                 setTimeout(() => {
                     window.Telegram.WebApp.close();
-                }, 100); // 100ms delay
+                }, 1000); // Задержка 1 секунда
             });
 
             withdrawButton.addEventListener('click', () => {
+                showStatusMessage("Отправка запроса на вывод средств...");
                 window.Telegram.WebApp.sendData(JSON.stringify({ action: "start_withdraw_flow" }));
-                // Add a small delay before closing to ensure data is sent
+                // Добавляем небольшую задержку перед закрытием, чтобы убедиться, что данные отправлены
                 setTimeout(() => {
                     window.Telegram.WebApp.close();
-                }, 100); // 100ms delay
+                }, 1000); // Задержка 1 секунда
             });
         } else {
-            // For standalone testing, log clicks
+            // Для автономного тестирования, логируем клики
             depositButton.addEventListener('click', () => {
-                // Using a custom message box instead of alert()
-                showCustomMessage("Deposit: This function works via the Telegram Bot.");
-                console.log("Deposit button clicked (standalone)");
+                // Используем пользовательское окно сообщений вместо alert()
+                showCustomMessage("Пополнение: Эта функция работает через Telegram Bot.");
+                console.log("Нажата кнопка 'Пополнить' (автономный режим)");
             });
             withdrawButton.addEventListener('click', () => {
-                // Using a custom message box instead of alert()
-                showCustomMessage("Withdrawal: This function works via the Telegram Bot.");
-                console.log("Withdrawal button clicked (standalone)");
+                // Используем пользовательское окно сообщений вместо alert()
+                showCustomMessage("Вывод средств: Эта функция работает через Telegram Bot.");
+                console.log("Нажата кнопка 'Вывести' (автономный режим)");
             });
 
-            // Basic custom message box for standalone mode
+            // Базовое пользовательское окно сообщений для автономного режима
             function showCustomMessage(message) {
                 const messageBox = document.createElement('div');
                 messageBox.style.cssText = `
@@ -707,10 +768,12 @@
         }
 
 
-        // Initial render
-        fetchAndRenderWalletData();
+        // Начальная отрисовка и показ контента после загрузки
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchAndRenderWalletData();
+        });
 
-        // Auto-refresh every 10 seconds
+        // Автоматическое обновление каждые 10 секунд
         setInterval(fetchAndRenderWalletData, 10000);
     </script>
 </body>
