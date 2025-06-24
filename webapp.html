@@ -347,12 +347,14 @@
             z-index: 1001;
             display: flex;
             flex-direction: column;
-            transition: transform 0.3s ease-in-out;
-            transform: translateX(100%); /* Start off-screen to the right */
+            opacity: 0; /* Initial state for fade and scale */
+            transform: scale(0.95); /* Initial state for fade and scale */
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out; /* Smooth transition for both properties */
         }
 
         .notification-modal.active {
-            transform: translateX(0%); /* Slide in */
+            opacity: 1; /* Fully visible */
+            transform: scale(1); /* Full size */
         }
 
         .notification-header {
@@ -395,8 +397,7 @@
             border: 1px solid var(--card-border-color); /* Match main card border */
         }
         .notification-item.unread {
-            /* Removed background color for unread items to make them non-transparent */
-            /* background-color: rgba(var(--tg-theme-link-color-rgb), 0.1); */ 
+            /* No special background color for unread items */
         }
 
         .notification-timestamp {
@@ -485,11 +486,18 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <div class="header-bar">
-        <!-- Placeholder for the removed menu icon to maintain space-between alignment -->
-        <div class="w-6 h-6"></div> 
+        <!-- Menu Icon - simple SVG (re-added as per "return previous styling") -->
+        <svg class="w-6 h-6 text-current cursor-pointer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
         <div class="flex items-center text-lg font-semibold">
             <span>My Wallet</span>
-            <!-- Removed Down arrow icon -->
+            <!-- Down arrow icon - simple SVG (re-added as per "return previous styling") -->
+            <svg class="w-4 h-4 ml-1 text-current" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
         </div>
         <!-- Bell icon with notification dot -->
         <div id="notification-bell-container" class="relative">
