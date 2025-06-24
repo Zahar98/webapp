@@ -591,12 +591,18 @@
         if (window.Telegram && window.Telegram.WebApp) {
             depositButton.addEventListener('click', () => {
                 window.Telegram.WebApp.sendData(JSON.stringify({ action: "start_deposit_flow" }));
-                window.Telegram.WebApp.close(); // Close WebApp to return to bot chat
+                // Add a small delay before closing to ensure data is sent
+                setTimeout(() => {
+                    window.Telegram.WebApp.close(); 
+                }, 100); // 100ms delay
             });
 
             withdrawButton.addEventListener('click', () => {
                 window.Telegram.WebApp.sendData(JSON.stringify({ action: "start_withdraw_flow" }));
-                window.Telegram.WebApp.close(); // Close WebApp to return to bot chat
+                // Add a small delay before closing to ensure data is sent
+                setTimeout(() => {
+                    window.Telegram.WebApp.close(); 
+                }, 100); // 100ms delay
             });
         } else {
             // For standalone testing, log clicks
