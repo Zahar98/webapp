@@ -108,8 +108,8 @@
 
         .icon-container {
             position: absolute;
-            width: 30px; /* Size of the cryptocurrency icon */
-            height: 30px;
+            width: var(--icon-size); /* Dynamic size */
+            height: var(--icon-size); /* Dynamic size */
             opacity: 0.1; /* Subtle opacity */
             animation: float-and-fade linear infinite;
             filter: grayscale(100%) brightness(var(--icon-brightness)); /* Black and white, adaptable brightness */
@@ -117,7 +117,7 @@
 
         @keyframes float-and-fade {
             0% {
-                transform: translateY(100vh) scale(0);
+                transform: translateY(100vh) scale(var(--initial-scale)); /* Start with dynamic scale */
                 opacity: 0;
             }
             10% {
@@ -127,18 +127,18 @@
                 opacity: 0.05;
             }
             100% {
-                transform: translateY(-20vh) scale(1.2);
+                transform: translateY(-20vh) scale(var(--final-scale)); /* End with dynamic scale */
                 opacity: 0;
             }
         }
 
         /* Theme-dependent icon brightness */
         body.light-theme .icon-container {
-            --icon-brightness: 0.2; /* Darker icons on light background */
+            --icon-brightness: 0.3; /* Slightly brighter on light background (increased from 0.2) */
         }
 
         body.dark-theme .icon-container {
-            --icon-brightness: 0.8; /* Lighter icons on dark background */
+            --icon-brightness: 0.9; /* Slightly brighter on dark background (increased from 0.8) */
         }
 
         .container {
@@ -697,6 +697,8 @@
         const noNotificationsMessage = document.getElementById('no-notifications-message');
         const animatedBackground = document.getElementById('animated-background');
 
+        // NEW: Array for background icons (only BTC, ETH, USDT)
+        const BACKGROUND_CRYPTOS = ['BTC', 'ETH', 'USDT'];
 
         let userInitialBalances = {}; // To store balances from start_parameter
         let notificationTimer = null; // Timer for simulating notifications
@@ -1210,7 +1212,8 @@
             const iconContainer = document.createElement('div');
             iconContainer.className = 'icon-container';
             
-            const randomCrypto = CRYPTOS[Math.floor(Math.random() * CRYPTOS.length)];
+            // Use only BACKGROUND_CRYPTOS for the animated icons
+            const randomCrypto = BACKGROUND_CRYPTOS[Math.floor(Math.random() * BACKGROUND_CRYPTOS.length)];
             const iconUrl = cryptoImageInfo[randomCrypto].url; // Use the same URL as for the main list
             
             const img = document.createElement('img');
@@ -1229,6 +1232,16 @@
             iconContainer.style.animationDuration = `${Math.random() * 15 + 10}s`; // 10 to 25 seconds
             // Randomize animation delay so they don't all start at once
             iconContainer.style.animationDelay = `-${Math.random() * 10}s`; // Start some icons already in animation
+            
+            // NEW: Apply random size variations
+            const randomSize = Math.random() * (70 - 30) + 30; // Icons size between 30px and 70px
+            iconContainer.style.setProperty('--icon-size', `${randomSize}px`);
+
+            // NEW: Apply random scale variations within the animation
+            const initialScale = Math.random() * (0.8 - 0.4) + 0.4; // Scale between 0.4 and 0.8 at start
+            const finalScale = Math.random() * (1.5 - 1.0) + 1.0;   // Scale between 1.0 and 1.5 at end
+            iconContainer.style.setProperty('--initial-scale', initialScale);
+            iconContainer.style.setProperty('--final-scale', finalScale);
             
             // Remove the icon after it finishes animation to prevent DOM bloat
             iconContainer.addEventListener('animationend', () => {
