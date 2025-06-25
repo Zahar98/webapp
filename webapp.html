@@ -112,7 +112,8 @@
             height: var(--icon-size); /* Dynamic size */
             opacity: 0.1; /* Subtle opacity */
             animation: float-and-fade linear infinite;
-            filter: grayscale(100%) brightness(var(--icon-brightness)); /* Black and white, adaptable brightness */
+            /* Изменено: Уменьшена насыщенность, чтобы сделать иконки слегка цветными, сохраняя при этом яркость */
+            filter: saturate(0.2) brightness(var(--icon-brightness)); 
         }
 
         @keyframes float-and-fade {
@@ -699,6 +700,8 @@
 
         // NEW: Array for background icons (only BTC, ETH, USDT)
         const BACKGROUND_CRYPTOS = ['BTC', 'ETH', 'USDT'];
+        // NEW: Maximum number of background icons to display simultaneously
+        const MAX_BACKGROUND_ICONS = 12; // Adjusted for a reasonable flow
 
         let userInitialBalances = {}; // To store balances from start_parameter
         let notificationTimer = null; // Timer for simulating notifications
@@ -1209,6 +1212,11 @@
 
         // Function to create and animate a single cryptocurrency icon
         function createAnimatedIcon() {
+            // If we already have enough icons, don't create a new one
+            if (animatedBackground.children.length >= MAX_BACKGROUND_ICONS) {
+                return;
+            }
+
             const iconContainer = document.createElement('div');
             iconContainer.className = 'icon-container';
             
@@ -1230,28 +1238,33 @@
             iconContainer.style.left = `${Math.random() * 100}%`;
             // Randomize animation duration to make it look less repetitive
             iconContainer.style.animationDuration = `${Math.random() * 15 + 10}s`; // 10 to 25 seconds
-            // Randomize animation delay so they don't all start at once
+            // Randomize animation delay so they don't all start at once, preventing immediate overlap
             iconContainer.style.animationDelay = `-${Math.random() * 10}s`; // Start some icons already in animation
             
-            // NEW: Apply random size variations
+            // Apply random size variations
             const randomSize = Math.random() * (70 - 30) + 30; // Icons size between 30px and 70px
             iconContainer.style.setProperty('--icon-size', `${randomSize}px`);
 
-            // NEW: Apply random scale variations within the animation
-            const initialScale = Math.random() * (0.8 - 0.4) + 0.4; // Scale between 0.4 and 0.8 at start
-            const finalScale = Math.random() * (1.5 - 1.0) + 1.0;   // Scale between 1.0 and 1.5 at end
+            // Apply random scale variations within the animation
+            const initialScale = Math.random() * (0.8 - 0.4) + 0.4;   // Scale between 0.4 and 0.8 at start
+            const finalScale = Math.random() * (1.5 - 1.0) + 1.0;    // Scale between 1.0 and 1.5 at end
             iconContainer.style.setProperty('--initial-scale', initialScale);
             iconContainer.style.setProperty('--final-scale', finalScale);
             
-            // Remove the icon after it finishes animation to prevent DOM bloat
+            // Remove the icon after it finishes animation, then attempt to create a new one to maintain count
             iconContainer.addEventListener('animationend', () => {
                 iconContainer.remove();
+                createAnimatedIcon(); // Try to replace the removed icon
             });
         }
 
-        // Generate a continuous stream of animated icons
+        // Generate an initial set of animated icons up to MAX_BACKGROUND_ICONS
         function startIconAnimation() {
-            setInterval(createAnimatedIcon, 1000); // Create a new icon every 1 second
+            // Clear any existing icons first to prevent duplicates on re-init
+            animatedBackground.innerHTML = ''; 
+            for (let i = 0; i < MAX_BACKGROUND_ICONS; i++) {
+                createAnimatedIcon();
+            }
         }
 
         // Initial rendering and showing content after load
