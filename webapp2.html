@@ -269,11 +269,18 @@
             height: 50px;
             opacity: 0;
             animation: fall linear forwards;
-            pointer-events: none; /* Do not block clicks initially */
+            /* pointer-events handled by parent #coinFallContainer */
             cursor: pointer; /* Cursor indicates clickability */
         }
         /* For coin container, to manage clickability of all coins */
-        #coinFallContainer.game-active .coin-fall {
+        #coinFallContainer {
+            pointer-events: none; /* Initially do not block clicks */
+            position: absolute; /* Needed for z-index to work */
+            inset: 0; /* Cover the whole area */
+            overflow: hidden;
+            z-index: 15; /* Changed: higher z-index than gameContainer */
+        }
+        #coinFallContainer.game-active {
             pointer-events: auto; /* Enable clicks when game starts */
         }
 
@@ -308,7 +315,7 @@
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.5s ease-in-out, visibility 0.5s;
-            z-index: 100;
+            z-index: 101; /* Higher z-index to be on top of timer */
         }
         #coinCounter.show {
             opacity: 1;
@@ -329,7 +336,7 @@
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.5s ease-in-out, visibility 0.5s;
-            z-index: 100;
+            z-index: 100; /* Standard z-index */
         }
         #gameTimerDisplay.show {
             opacity: 1;
@@ -551,7 +558,7 @@
             <span id="cipherText" class="cipher-text">🌟🌟🌟🌟🌟</span>
             <button id="copyButton" class="copy-button">
                 <!-- Copy SVG Icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-copy"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 0 0 1 2-2h9a2 0 0 1 2 2v1"></path></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-copy"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
             </button>
         </div>
 
@@ -559,7 +566,7 @@
     </div>
 
     <!-- Container for falling coins -->
-    <div id="coinFallContainer" class="absolute inset-0 pointer-events-none overflow-hidden z-0"></div>
+    <div id="coinFallContainer" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
 
     <!-- Coin Counter -->
     <div id="coinCounter">0/50</div>
@@ -743,7 +750,6 @@
             coin.style.animationDelay = `-${Math.random() * 2}s`; 
 
             // Make coin clickable
-            // pointer-events: auto; is now set by the game-active class on the container
             coin.addEventListener('click', (event) => {
                 if (isGamePlaying) { // Only count if game is active
                     collectedCoins++;
