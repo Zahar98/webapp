@@ -50,6 +50,10 @@
             --current-bg-h2: var(--solana-bg-h2);
             --current-bg-s2: var(--solana-bg-s2);
             --current-bg-l2: var(--solana-bg-l2);
+
+            /* Pixel Art Colors */
+            --pixel-bg-color: #1a1a1a; /* Dark base for pixel grid */
+            --pixel-accent-color: #333333; /* Slightly lighter pixel accent */
         }
 
         body {
@@ -64,7 +68,7 @@
             color: var(--current-text-color);
         }
 
-        /* Canvas for background animation */
+        /* Canvas for background animation - Now handles pixel art */
         #gameCanvas {
             position: fixed;
             top: 0;
@@ -72,19 +76,9 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            /* Use HSL variables for the gradient, these will be animated */
-            background-image: linear-gradient(135deg, 
-                hsl(var(--current-bg-h1), var(--current-bg-s1)%, var(--current-bg-l1)%) 0%, 
-                hsl(var(--current-bg-h2), var(--current-bg-s2)%, var(--current-bg-l2)%) 100%
-            );
-            /* Transition HSL custom properties */
-            transition: 
-                --current-bg-h1 1s ease-in-out, 
-                --current-bg-s1 1s ease-in-out, 
-                --current-bg-l1 1s ease-in-out,
-                --current-bg-h2 1s ease-in-out,
-                --current-bg-s2 1s ease-in-out,
-                --current-bg-l2 1s ease-in-out;
+            background-color: var(--pixel-bg-color); /* Base pixel background color */
+            /* No gradient transition here, JS draws pixel art */
+            transition: background-color 1s ease-in-out; /* Smooth transition for base color if needed */
         }
 
         /* Main game container */
@@ -614,9 +608,16 @@
         const closePromoModalButton = document.getElementById('closePromoModal');
 
         let currentTheme = 'solana'; // 'solana' or 'ton'
-        let stars = [];
-        let numStars = 500;
-        let starSpeedMultiplier = 1; // Default speed
+        let pixels = []; // Array to store pixel art "pixels"
+        const pixelSize = 10; // Size of each pixel art block
+        const pixelColors = [
+            'rgba(26, 26, 26, 0.8)', // --pixel-bg-color
+            'rgba(51, 51, 51, 0.8)', // --pixel-accent-color
+            'rgba(26, 26, 26, 0.5)',
+            'rgba(51, 51, 51, 0.5)',
+            'rgba(26, 26, 26, 0.2)' // Fading pixel
+        ];
+        let pixelSpeedMultiplier = 1; // Speed for pixel animation
         let coinFallInterval = null;
         let gameTimer = null;
         let countdownInterval = null; // Interval for countdown
@@ -648,42 +649,52 @@
             tonCoinImg.src = 'https://placehold.co/50x50/0098EA/FFFFFF?text=TON!';
         };
 
-        // --- Canvas Star Background Animation ---
+        // --- Canvas Pixel Art Background Animation ---
         function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            initStars(); // Reinitialize stars on resize
+            initPixels(); // Reinitialize pixels on resize
         }
 
-        function initStars() {
-            stars = [];
-            for (let i = 0; i < numStars; i++) {
-                stars.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    radius: Math.random() * 1.5 + 0.5,
-                    vx: 0, // No horizontal movement
-                    vy: Math.random() * 0.5 + 0.1 // Vertical speed
-                });
-            }
-        }
+        function initPixels() {
+            pixels = [];
+            const numColumns = Math.ceil(canvas.width / pixelSize);
+            const numRows = Math.ceil(canvas.height / pixelSize);
 
-        function drawStars() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = 'white';
-            for (let i = 0; i < numStars; i++) {
-                const star = stars[i];
-                star.y += star.vy * starSpeedMultiplier;
-                if (star.y > canvas.height) {
-                    star.y = 0;
-                    star.x = Math.random() * canvas.width;
-                    star.vy = Math.random() * 0.5 + 0.1;
+            for (let y = 0; y < numRows; y++) {
+                for (let x = 0; x < numColumns; x++) {
+                    pixels.push({
+                        x: x * pixelSize,
+                        y: y * pixelSize,
+                        color: pixelColors[Math.floor(Math.random() * pixelColors.length)],
+                        alpha: Math.random() * 0.5 + 0.1, // Random initial opacity
+                        speed: Math.random() * 0.02 + 0.005 // Random animation speed
+                    });
                 }
-                ctx.beginPath();
-                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-                ctx.fill();
             }
-            requestAnimationFrame(drawStars);
+        }
+
+        function drawPixels() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the entire canvas
+            
+            // Draw a base background color to ensure no transparent gaps
+            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--pixel-bg-color');
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            for (let i = 0; i < pixels.length; i++) {
+                const pixel = pixels[i];
+
+                // Animate pixel opacity to create a subtle flickering effect
+                pixel.alpha += pixel.speed * pixelSpeedMultiplier;
+                if (pixel.alpha > 0.8 || pixel.alpha < 0.1) {
+                    pixel.speed *= -1; // Reverse speed to make it flicker
+                }
+                
+                // Draw each pixel
+                ctx.fillStyle = pixel.color.replace(/[\d\.]+\)$/, `${pixel.alpha})`); // Update alpha dynamically
+                ctx.fillRect(pixel.x, pixel.y, pixelSize, pixelSize);
+            }
+            requestAnimationFrame(drawPixels);
         }
 
         // --- Theme Management ---
@@ -695,15 +706,11 @@
                 root.style.setProperty('--current-text-color', 'var(--solana-text-color)');
                 root.style.setProperty('--current-button-bg', 'var(--solana-button-bg)');
                 root.style.setProperty('--current-button-hover', 'var(--solana-button-hover)');
-                root.style.setProperty('--current-pill-bg', 'var(--solana-pill-bg)');
+                root.style.setProperty('--current-pill-bg', 'rgba(142, 68, 173, 0.7)'); /* Ensure transparency for pill */
                 
-                // Set HSL variables for background gradient
-                root.style.setProperty('--current-bg-h1', 'var(--solana-bg-h1)');
-                root.style.setProperty('--current-bg-s1', 'var(--solana-bg-s1)');
-                root.style.setProperty('--current-bg-l1', 'var(--solana-bg-l1)');
-                root.style.setProperty('--current-bg-h2', 'var(--solana-bg-h2)');
-                root.style.setProperty('--current-bg-s2', 'var(--solana-bg-s2)');
-                root.style.setProperty('--current-bg-l2', 'var(--solana-bg-l2)');
+                // No HSL variables for canvas background anymore, handled by pixel art
+                root.style.setProperty('--pixel-bg-color', '#1a1a1a');
+                root.style.setProperty('--pixel-accent-color', '#333333');
 
                 gameTitle.textContent = "Solana Drop";
                 solanaOption.classList.add('active');
@@ -714,22 +721,17 @@
                 root.style.setProperty('--current-text-color', 'var(--ton-text-color)');
                 root.style.setProperty('--current-button-bg', 'var(--ton-button-bg)');
                 root.style.setProperty('--current-button-hover', 'var(--ton-button-hover)');
-                root.style.setProperty('--current-pill-bg', 'var(--ton-pill-bg)');
+                root.style.setProperty('--current-pill-bg', 'rgba(0, 152, 234, 0.7)'); /* Ensure transparency for pill */
 
-                // Set HSL variables for background gradient
-                root.style.setProperty('--current-bg-h1', 'var(--ton-bg-h1)');
-                root.style.setProperty('--current-bg-s1', 'var(--ton-bg-s1)');
-                root.style.setProperty('--current-bg-l1', 'var(--ton-bg-l1)');
-                root.style.setProperty('--current-bg-h2', 'var(--ton-bg-h2)');
-                root.style.setProperty('--current-bg-s2', 'var(--ton-bg-s2)');
-                root.style.setProperty('--current-bg-l2', 'var(--ton-bg-l2)');
+                // No HSL variables for canvas background anymore, handled by pixel art
+                root.style.setProperty('--pixel-bg-color', '#0d1a26'); /* Darker blue-ish for TON */
+                root.style.setProperty('--pixel-accent-color', '#1a334d'); /* Slightly lighter blue-ish */
 
                 gameTitle.textContent = "TON Drop";
                 solanaOption.classList.remove('active');
                 tonOption.classList.add('active');
             }
             currentTheme = theme;
-            // No need to set canvas.style.backgroundImage directly, CSS transition handles it.
         }
 
         // --- Falling Coin Logic ---
@@ -850,7 +852,7 @@
             copyButton.disabled = true; // Disable copy button
             coinFallContainer.classList.add('game-active'); // Activate coin clickability
 
-            starSpeedMultiplier = 5; // Accelerate background
+            pixelSpeedMultiplier = 5; // Accelerate pixel background animation
 
             // Start dropping coins (optimized)
             coinFallInterval = setInterval(createFallingCoin, 500); // Reduced coin creation frequency (slower falling)
@@ -899,7 +901,7 @@
             copyButton.disabled = false;
             coinFallContainer.classList.remove('game-active'); // Deactivate coin clickability
 
-            starSpeedMultiplier = 1; // Reset background speed
+            pixelSpeedMultiplier = 1; // Reset background speed
             clearInterval(coinFallInterval);
             coinFallInterval = null;
             clearInterval(countdownInterval); // Clear countdown interval
@@ -1001,8 +1003,8 @@
             const newTheme = currentTheme === 'solana' ? 'ton' : 'solana';
             applyTheme(newTheme);
 
-            // Wait for background transition to complete (1 second for HSL property transition)
-            await new Promise(resolve => setTimeout(resolve, 1000)); 
+            // Small delay to ensure theme colors are applied before re-showing title
+            await new Promise(resolve => setTimeout(resolve, 100)); 
             
             gameTitle.style.opacity = 1; // Smoothly show new title
             gameContainer.style.pointerEvents = 'auto'; // Re-enable interactions
@@ -1012,8 +1014,8 @@
 
         // Initial setup
         window.addEventListener('resize', resizeCanvas);
-        resizeCanvas(); // Set initial canvas size and stars
-        drawStars(); // Start star animation loop
+        resizeCanvas(); // Set initial canvas size and pixels
+        drawPixels(); // Start pixel animation loop
         applyTheme('solana'); // Set initial theme
         updateCounterDisplay(); // Set initial counter text
         updateTimerDisplay(); // Set initial timer text
