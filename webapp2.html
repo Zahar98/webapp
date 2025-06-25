@@ -408,6 +408,10 @@
             color: var(--current-secondary);
             margin-bottom: 15px;
             text-shadow: 2px 2px 0px var(--current-primary);
+            /* Add these lines to ensure centering */
+            width: 100%; /* Ensure it takes full width of its container */
+            text-align: center; /* Explicitly center text within the h2 */
+            box-sizing: border-box; /* Include padding/border in the width */
         }
 
         .promo-modal-content p {
