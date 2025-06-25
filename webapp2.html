@@ -28,12 +28,12 @@
             --ton-pill-bg: rgba(0, 152, 234, 0.7); /* Приглушенный синий */
 
             /* Значения HSL темы Solana для фонового градиента (скорректированы, более яркие) */
-            --solana-bg-h1: 260; --solana-bg-s1: 60; --solana-bg-l1: 30; 
-            --solana-bg-h2: 280; --solana-bg-s2: 70; --solana-bg-l2: 50; 
+            --solana-bg-h1: 260; --solana-bg-s1: 80; --solana-bg-l1: 45; /* Более насыщенный, яркий темный фиолетовый */
+            --solana-bg-h2: 280; --solana-bg-s2: 90; --solana-bg-l2: 65; /* Более насыщенный, яркий светлый фиолетовый */
 
             /* Значения HSL темы TON для фонового градиента (скорректированы, более яркие) */
-            --ton-bg-h1: 205; --ton-bg-s1: 100; --ton-bg-l1: 35; 
-            --ton-bg-h2: 190; --ton-bg-s2: 90; --ton-bg-l2: 55; 
+            --ton-bg-h1: 205; --ton-bg-s1: 90; --ton-bg-l1: 40; /* Более яркий темно-синий */
+            --ton-bg-h2: 190; --ton-bg-s2: 85; --ton-bg-l2: 60; /* Более яркий светло-голубой */
 
             /* Общие/текущие переменные темы (начальное состояние - Solana) */
             --current-primary: var(--solana-primary);
@@ -231,7 +231,7 @@
             cursor: pointer;
             box-shadow: 0 2px 10px rgba(0,0,0,0.3);
             position: absolute;
-            top: 1rem;
+            top: 0.75rem; /* Перемещено чуть выше */
             left: 50%;
             transform: translateX(-50%);
             transition: background-color 0.3s ease;
@@ -843,7 +843,7 @@
             starSpeedMultiplier = 5; // Ускорить фон
 
             // Начать падение монет (оптимизировано)
-            coinFallInterval = setInterval(createFallingCoin, 350); 
+            coinFallInterval = setInterval(createFallingCoin, 500); // Уменьшена частота создания монет (медленнее падение)
 
             // Запустить игровой таймер
             countdownInterval = setInterval(() => {
