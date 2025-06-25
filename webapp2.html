@@ -112,7 +112,7 @@
             height: var(--icon-size); /* Dynamic size */
             opacity: 0.1; /* Subtle opacity */
             animation: float-and-fade linear infinite;
-            /* Changed: Reduced saturation to make icons slightly colored while retaining brightness */
+            /* Изменено: Уменьшена насыщенность, чтобы сделать иконки слегка цветными, сохраняя при этом яркость */
             filter: saturate(0.2) brightness(var(--icon-brightness)); 
         }
 
@@ -197,41 +197,20 @@
             margin-top: 0.25rem;
         }
 
-        .action-buttons {
-            display: flex;
-            justify-content: space-around;
-            gap: 0.5rem;
-            padding: 0.75rem 0.5rem;
-        }
-        .action-button {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background-color: var(--tg-theme-button-color);
-            border-radius: 8px;
-            padding: 0.8rem 1rem;
-            color: var(--tg-theme-button-text-color);
-            font-size: 0.875rem;
-            font-weight: 600;
+        /* NEW: Styles for the warning message container */
+        .warning-message-container {
+            background-color: var(--tg-color-card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             text-align: center;
-            flex-grow: 1;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-        .action-button:hover {
-            filter: brightness(1.1); /* Slightly brighter on hover */
-        }
-        .action-icon {
-            width: 24px; /* Ensure consistent size for action icons */
-            height: 24px;
-            margin-bottom: 0.25rem;
-            fill: none; /* No fill for outline icons */
-            stroke: currentColor; /* Inherit text color */
-            stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
+            color: var(--tg-theme-text-color);
+            border: 1px solid var(--card-border-color);
+            font-size: 1rem;
+            line-height: 1.5;
+            position: relative;
+            z-index: 2;
         }
 
         .crypto-list-header {
@@ -569,23 +548,9 @@
             <p id="total-balance-change" class="sub-balance-value">$0.00 (0.0%)</p>
         </div>
 
-        <div class="action-buttons">
-            <button id="deposit-button" class="action-button">
-                <!-- Deposit icon - simple SVG -->
-                <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="12" y1="19" x2="12" y2="5"></line>
-                    <polyline points="5 12 12 5 19 12"></polyline>
-                </svg>
-                <span>Deposit</span>
-            </button>
-            <button id="withdraw-button" class="action-button">
-                <!-- Withdraw icon - simple SVG -->
-                <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                    <polyline points="19 12 12 19 5 12"></polyline>
-                </svg>
-                <span>Withdraw</span>
-            </button>
+        <!-- NEW: Warning message instead of action buttons -->
+        <div class="warning-message-container">
+            <p>Funds can only be deposited or withdrawn via the 'My Portfolio' section.</p>
         </div>
 
         <h2 class="crypto-list-header">Cryptocurrency</h2>
@@ -687,8 +652,7 @@
         const totalBalanceUsd = document.getElementById('total-balance-usd');
         const totalBalanceChange = document.getElementById('total-balance-change');
         const cryptoList = document.getElementById('crypto-list');
-        const depositButton = document.getElementById('deposit-button');
-        const withdrawButton = document.getElementById('withdraw-button');
+        // Removed depositButton and withdrawButton as they are no longer in HTML
         const statusMessageDiv = document.getElementById('status-message');
         const notificationBell = document.getElementById('notification-bell');
         const notificationDot = document.getElementById('notification-dot');
@@ -698,13 +662,13 @@
         const noNotificationsMessage = document.getElementById('no-notifications-message');
         const animatedBackground = document.getElementById('animated-background');
 
-        // NEW: Array for background icons (only BTC, ETH, USDT)
+        // Array for background icons (only BTC, ETH, USDT)
         const BACKGROUND_CRYPTOS = ['BTC', 'ETH', 'USDT'];
-        // NEW: Maximum number of background icons to display simultaneously
-        const MAX_BACKGROUND_ICONS = 12; // Adjusted for a reasonable flow
+        // Maximum number of background icons to display simultaneously
+        const MAX_BACKGROUND_ICONS = 12; 
 
-        let userInitialBalances = {}; // To store balances from start_parameter
-        let notificationTimer = null; // Timer for simulating notifications
+        let userInitialBalances = {}; 
+        let notificationTimer = null; 
 
         // Function to apply Telegram theme parameters
         function applyTelegramTheme() {
@@ -757,7 +721,7 @@
 
                 console.log("Telegram theme parameters applied:", themeParams);
             } else {
-                console.warn("Telegram WebApp themeParams object not found. Using default colors.");
+                console.warn("Telegram WebApp object not found. Using default colors.");
                 // Set default border color for standalone mode (light background)
                 document.documentElement.style.setProperty('--card-border-color', 'var(--card-border-color-light)');
                 // Default RGB for link color for standalone mode
@@ -1152,52 +1116,30 @@
             updateNotificationDot(); // Update dot after potential new notifications
         }
 
-        // --- Event handlers for buttons ---
-        if (window.Telegram && window.Telegram.WebApp) {
-            depositButton.addEventListener('click', () => {
-                showStatusMessage("Sending deposit request...");
-                // Add haptic feedback (vibration) to confirm button press
+        // --- Event handlers for buttons (removed deposit/withdraw event listeners as buttons are removed) ---
+        // If Telegram WebApp is available, ensure we handle the case where "Moje portfolio" leads to a bot action.
+        // Assuming "Manage Cryptocurrencies" button might lead to the portfolio section.
+        const manageButton = document.querySelector('.manage-button');
+        if (manageButton && window.Telegram && window.Telegram.WebApp) {
+            manageButton.addEventListener('click', () => {
+                showStatusMessage("Opening 'My Portfolio' section...");
                 if (window.Telegram.WebApp.HapticFeedback) {
                     window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
                 }
+                // Assuming 'manage_portfolio_flow' is the action for 'My Portfolio'
                 try {
-                    // Correctly send the action name for deposit flow
-                    window.Telegram.WebApp.sendData(JSON.stringify({ action: "start_deposit_flow" }));
-                    console.log("Deposit data sent to WebApp.");
+                    window.Telegram.WebApp.sendData(JSON.stringify({ action: "start_manage_portfolio_flow" }));
+                    console.log("Manage portfolio data sent to WebApp.");
                 } catch (e) {
-                    console.error("Error sending deposit data via WebApp:", e);
-                    showStatusMessage("Error sending request.");
+                    console.error("Error sending manage portfolio data via WebApp:", e);
+                    showStatusMessage("Error opening portfolio.");
                 }
             });
-
-            withdrawButton.addEventListener('click', () => {
-                showStatusMessage("Sending withdrawal request...");
-                // Add haptic feedback (vibration) to confirm button press
-                if (window.Telegram.WebApp.HapticFeedback) {
-                    window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
-                }
-                try {
-                    // Correctly send the action name for withdraw flow
-                    window.Telegram.WebApp.sendData(JSON.stringify({ action: "start_withdraw_flow" }));
-                    console.log("Withdrawal data sent to WebApp.");
-                } catch (e) {
-                    console.error("Error sending withdrawal data via WebApp:", e);
-                    showStatusMessage("Error sending request.");
-                }
+        } else if (manageButton) { // For standalone mode, log click for manage button
+             manageButton.addEventListener('click', () => {
+                showCustomMessage("Manage Cryptocurrencies: This would navigate to your portfolio section in a real Telegram bot environment.");
+                console.log("Manage Cryptocurrencies button clicked (standalone mode)");
             });
-        } else {
-            // For standalone testing, log clicks
-            depositButton.addEventListener('click', () => {
-                // Use custom message box instead of alert()
-                showCustomMessage("Deposit: This function works through the Telegram Bot.");
-                console.log("Deposit button clicked (standalone mode)");
-            });
-            withdrawButton.addEventListener('click', () => {
-                // Use custom message box instead of alert()
-                showCustomMessage("Withdrawal: This function works through the Telegram Bot.");
-                console.log("Withdraw button clicked (standalone mode)");
-            });
-
             // Basic custom message box for standalone mode
             function showCustomMessage(message) {
                 const messageBox = document.createElement('div');
@@ -1209,6 +1151,7 @@
                 document.body.appendChild(messageBox);
             }
         }
+
 
         // Function to create and animate a single cryptocurrency icon
         function createAnimatedIcon() {
