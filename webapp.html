@@ -80,6 +80,8 @@
             box-sizing: border-box;
             overflow-x: hidden; /* Prevent horizontal scrolling */
             transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for theme change */
+            position: relative; /* For background positioning */
+            z-index: 1; /* Ensure body content is above background */
         }
 
         /* Fade-in effect applied only once on body load */
@@ -90,6 +92,53 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Animated background styles */
+        .animated-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1; /* Place behind other content */
+            background: linear-gradient(135deg, var(--tg-theme-bg-color) 0%, var(--tg-theme-secondary-bg-color) 100%);
+        }
+
+        .icon-container {
+            position: absolute;
+            width: 30px; /* Size of the cryptocurrency icon */
+            height: 30px;
+            opacity: 0.1; /* Subtle opacity */
+            animation: float-and-fade linear infinite;
+            filter: grayscale(100%) brightness(var(--icon-brightness)); /* Black and white, adaptable brightness */
+        }
+
+        @keyframes float-and-fade {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.1;
+            }
+            90% {
+                opacity: 0.05;
+            }
+            100% {
+                transform: translateY(-20vh) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        /* Theme-dependent icon brightness */
+        body.light-theme .icon-container {
+            --icon-brightness: 0.2; /* Darker icons on light background */
+        }
+
+        body.dark-theme .icon-container {
+            --icon-brightness: 0.8; /* Lighter icons on dark background */
         }
 
         .container {
@@ -113,6 +162,7 @@
             color: var(--tg-theme-hint-color); /* Use hint color for header icons/text */
             margin-bottom: 1rem;
             position: relative; /* For notification dot positioning */
+            z-index: 2; /* Ensure header is above background */
         }
 
         .main-balance-card,
@@ -127,6 +177,8 @@
             transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease; /* Smooth transition for border */
             /* Add border for contrast */
             border: 1px solid var(--card-border-color); /* Will be dynamically set by JS */
+            position: relative; /* Ensure cards are above background */
+            z-index: 2;
         }
         .main-balance-card {
             padding-bottom: 0.75rem; /* Padding adjustment for cards */
@@ -186,6 +238,8 @@
             font-size: 0.875rem;
             padding-left: 0.5rem;
             margin-bottom: 0.5rem;
+            position: relative; /* Ensure header is above background */
+            z-index: 2;
         }
 
         .crypto-list-card {
@@ -298,6 +352,8 @@
             width: 100%;
             max-width: 400px;
             text-align: center;
+            position: relative; /* Ensure button is above background */
+            z-index: 2;
         }
         .manage-button:hover {
             background-color: rgba(0, 123, 255, 0.1); /* Lighter background on hover for link color */
@@ -311,6 +367,7 @@
             height: 30px;
             animation: spin 1s linear infinite;
             margin: 2rem auto;
+            z-index: 2;
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }
@@ -484,6 +541,9 @@
     <!-- Telegram WebApp Script -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
+    <!-- Animated Background Container -->
+    <div class="animated-background" id="animated-background"></div>
+
     <div class="header-bar">
         <!-- Placeholder for the removed menu icon to maintain space-between alignment -->
         <div class="w-6 h-6"></div> 
@@ -554,6 +614,7 @@
 
     <script>
         const CRYPTOS = ['BTC', 'ETH', 'TON', 'USDT', 'SOL', 'TRX', 'DOGE'];
+        // Using the same cryptoImageInfo as the main list for animated background icons
         const cryptoImageInfo = {
             'USDT': {
                 url: './usdt.png', 
@@ -634,6 +695,7 @@
         const notificationList = document.getElementById('notification-list');
         const closeNotificationModalButton = document.getElementById('close-notification-modal');
         const noNotificationsMessage = document.getElementById('no-notifications-message');
+        const animatedBackground = document.getElementById('animated-background');
 
 
         let userInitialBalances = {}; // To store balances from start_parameter
@@ -679,9 +741,13 @@
                 if (themeParams.bg_color && isLightColor(themeParams.bg_color)) {
                     // Light theme
                     root.style.setProperty('--card-border-color', 'var(--card-border-color-light)');
+                    document.body.classList.remove('dark-theme');
+                    document.body.classList.add('light-theme');
                 } else {
                     // Dark theme or unknown color (assume dark)
                     root.style.setProperty('--card-border-color', 'var(--card-border-color-dark)');
+                    document.body.classList.remove('light-theme');
+                    document.body.classList.add('dark-theme');
                 }
 
                 console.log("Telegram theme parameters applied:", themeParams);
@@ -691,6 +757,8 @@
                 document.documentElement.style.setProperty('--card-border-color', 'var(--card-border-color-light)');
                 // Default RGB for link color for standalone mode
                 document.documentElement.style.setProperty('--tg-theme-link-color-rgb', '0,123,255');
+                // Assume light theme for standalone mode
+                document.body.classList.add('light-theme');
             }
         }
 
@@ -751,6 +819,8 @@
             };
             // Set default border color for standalone mode (light background)
             document.documentElement.style.setProperty('--card-border-color', 'var(--card-border-color-light)');
+            // Assume light theme for standalone mode
+            document.body.classList.add('light-theme');
         }
 
         // Helper function for formatting numbers to currency
@@ -1135,11 +1205,47 @@
             }
         }
 
+        // Function to create and animate a single cryptocurrency icon
+        function createAnimatedIcon() {
+            const iconContainer = document.createElement('div');
+            iconContainer.className = 'icon-container';
+            
+            const randomCrypto = CRYPTOS[Math.floor(Math.random() * CRYPTOS.length)];
+            const iconUrl = cryptoImageInfo[randomCrypto].url; // Use the same URL as for the main list
+            
+            const img = document.createElement('img');
+            img.src = iconUrl;
+            img.alt = randomCrypto;
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'contain';
+
+            iconContainer.appendChild(img);
+            animatedBackground.appendChild(iconContainer);
+
+            // Randomize starting position (x)
+            iconContainer.style.left = `${Math.random() * 100}%`;
+            // Randomize animation duration to make it look less repetitive
+            iconContainer.style.animationDuration = `${Math.random() * 15 + 10}s`; // 10 to 25 seconds
+            // Randomize animation delay so they don't all start at once
+            iconContainer.style.animationDelay = `-${Math.random() * 10}s`; // Start some icons already in animation
+            
+            // Remove the icon after it finishes animation to prevent DOM bloat
+            iconContainer.addEventListener('animationend', () => {
+                iconContainer.remove();
+            });
+        }
+
+        // Generate a continuous stream of animated icons
+        function startIconAnimation() {
+            setInterval(createAnimatedIcon, 1000); // Create a new icon every 1 second
+        }
 
         // Initial rendering and showing content after load
         document.addEventListener('DOMContentLoaded', () => {
             fetchAndRenderWalletData();
             updateNotificationDot(); // Initial check for unread notifications
+            startIconAnimation(); // Start the background animation
         });
 
         // Automatic refresh every 10 seconds
