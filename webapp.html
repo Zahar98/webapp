@@ -130,6 +130,7 @@
         }
         .main-balance-card {
             padding-bottom: 0.75rem; /* Padding adjustment for cards */
+            cursor: pointer; /* Indicate it's clickable */
         }
 
         .balance-value {
@@ -331,6 +332,7 @@
             z-index: 999;
             opacity: 0;
             transition: opacity 0.3s ease-in-out;
+            pointer-events: none; /* Allow clicks through */
         }
         .status-message.show {
             opacity: 1;
@@ -347,7 +349,8 @@
             z-index: 1001;
             display: flex;
             flex-direction: column;
-            transition: transform 0.3s ease-in-out;
+            /* Updated transition for the "pop-out" effect: starts fast, slows down */
+            transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1); /* Ease-out-expo */
             transform: translateX(100%); /* Start off-screen to the right */
         }
 
@@ -393,10 +396,10 @@
             line-height: 1.4;
             color: var(--tg-theme-text-color);
             border: 1px solid var(--card-border-color); /* Match main card border */
+            word-wrap: break-word; /* Ensure long messages wrap */
         }
         .notification-item.unread {
-            /* Removed background color for unread items to make them non-transparent */
-            /* background-color: rgba(var(--tg-theme-link-color-rgb), 0.1); */ 
+            background-color: rgba(var(--tg-theme-link-color-rgb), 0.1); /* Light tint for unread */
         }
 
         .notification-timestamp {
@@ -634,10 +637,11 @@
         const notificationList = document.getElementById('notification-list');
         const closeNotificationModalButton = document.getElementById('close-notification-modal');
         const noNotificationsMessage = document.getElementById('no-notifications-message');
-
+        const mainBalanceCard = document.querySelector('.main-balance-card'); // Get the main balance card
 
         let userInitialBalances = {}; // To store balances from start_parameter
         let notificationTimer = null; // Timer for simulating notifications
+        let currentDisplayCurrency = 'USD'; // Initial display currency
 
         // Function to apply Telegram theme parameters
         function applyTelegramTheme() {
@@ -800,7 +804,7 @@
             const newNotification = {
                 id: Date.now(), // Unique ID
                 message: message,
-                timestamp: new Date().toLocaleString('en-US'), // Localized timestamp
+                timestamp: new Date().toLocaleString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }), // Localized timestamp for EN-US
                 isRead: false
             };
             notifications.unshift(newNotification); // Add to the beginning
@@ -922,7 +926,7 @@
             let prices = {};
             let changes = {};
             if (!COINMARKETCAP_API_KEY || COINMARKETCAP_API_KEY === 'YOUR_COINMARKETCAP_API_KEY') {
-                console.warn("CoinMarketCap API key is not set. Skipping CMC API call.");
+                console.warn("CoinMarketCap API key not set. Skipping CMC API call.");
                 return { prices: {}, changes: {} };
             }
 
@@ -936,7 +940,7 @@
                 const data = await response.json();
 
                 if (data.status.error_code !== 0) {
-                    console.error("CoinMarketCap API Error:", data.status.error_message);
+                    console.error("CoinMarketCap API error:", data.status.error_message);
                     return { prices: {}, changes: {} };
                 }
 
@@ -978,8 +982,8 @@
             crypto24hChanges = coingeckoData.changes;
 
             // Check if TON price is missing or problematic from CoinGecko, or if CoinGecko failed entirely
-            if (!cryptoPrices['TON'] || isNaN(cryptoPrices['TON']) || Object.keys(cryptoPrices).length === 0) {
-                console.warn("TON price missing from CoinGecko or CoinGecko API failed. Attempting CoinMarketCap as fallback.");
+            if ((!cryptoPrices['TON'] || isNaN(cryptoPrices['TON'])) || Object.keys(cryptoPrices).length === 0) {
+                console.warn("TON price is missing from CoinGecko or CoinGecko API is unavailable. Attempting to use CoinMarketCap as a fallback.");
                 const cmcData = await fetchPricesFromCoinMarketCap(CRYPTOS); // Fetch all cryptos from CMC
                 // Merge CMC data, prioritizing CMC if CoinGecko failed or TON was missing
                 cryptoPrices = { ...cryptoPrices, ...cmcData.prices };
@@ -1015,8 +1019,8 @@
             
             // Calculate total USD balance and overall portfolio change
             let totalUSD = 0;
-            let totalChangeValue = 0; // Absolute change in USD
-            let initialTotalUSD = 0; // For overall percentage calculation
+            let totalChangeValueUSD = 0; 
+            let initialTotalUSDForChange = 0; 
 
             for (const crypto of CRYPTOS) {
                 const balance = userBalances[crypto] || 0;
@@ -1028,22 +1032,44 @@
                 // Calculate initial value (24 hours ago) for overall portfolio change
                 if (changePct !== 0) {
                     const price24hAgo = price / (1 + changePct / 100);
-                    initialTotalUSD += balance * price24hAgo;
+                    initialTotalUSDForChange += balance * price24hAgo;
                 } else {
-                    initialTotalUSD += balance * price; // If no change, initial value is current
+                    initialTotalUSDForChange += balance * price; // If no change, initial value is current
                 }
             }
             
             let overallChangePct = 0;
-            if (initialTotalUSD > 0) {
-                overallChangePct = ((totalUSD - initialTotalUSD) / initialTotalUSD) * 100;
+            if (initialTotalUSDForChange > 0) {
+                overallChangePct = ((totalUSD - initialTotalUSDForChange) / initialTotalUSDForChange) * 100;
             }
-            totalChangeValue = totalUSD - initialTotalUSD;
+            totalChangeValueUSD = totalUSD - initialTotalUSDForChange;
+
+            // Calculate total BTC equivalent
+            let totalBTCEquivalent = 0;
+            const btcPriceInUSD = cryptoPrices['BTC'] || 1; // Fallback to 1 to avoid division by zero
+            if (btcPriceInUSD > 0) {
+                totalBTCEquivalent = totalUSD / btcPriceInUSD;
+            }
+
+            // Calculate total change in BTC equivalent
+            let totalChangeValueBTC = 0;
+            let initialTotalBTCForChange = 0;
+
+            if (btcPriceInUSD > 0) {
+                initialTotalBTCForChange = initialTotalUSDForChange / btcPriceInUSD;
+                totalChangeValueBTC = totalBTCEquivalent - initialTotalBTCForChange;
+            }
 
 
-            // Update UI elements
-            totalBalanceUsd.textContent = `$${formatCurrency(totalUSD)}`;
-            totalBalanceChange.textContent = `${totalChangeValue >= 0 ? '+' : ''}${formatCurrency(totalChangeValue)} $ (${formatPercentage(overallChangePct)})`;
+            // Update UI elements based on currentDisplayCurrency
+            if (currentDisplayCurrency === 'USD') {
+                totalBalanceUsd.textContent = `$${formatCurrency(totalUSD)}`;
+                totalBalanceChange.textContent = `${totalChangeValueUSD >= 0 ? '+' : ''}${formatCurrency(totalChangeValueUSD)} $ (${formatPercentage(overallChangePct)})`;
+            } else if (currentDisplayCurrency === 'BTC') {
+                totalBalanceUsd.textContent = `₿${totalBTCEquivalent.toLocaleString(undefined, { minimumFractionDigits: 8, maximumFractionDigits: 8 })}`;
+                totalBalanceChange.textContent = `${totalChangeValueBTC >= 0 ? '+' : ''}${totalChangeValueBTC.toLocaleString(undefined, { minimumFractionDigits: 8, maximumFractionDigits: 8 })} ₿ (${formatPercentage(overallChangePct)})`;
+            }
+
             totalBalanceChange.className = `sub-balance-value ${overallChangePct >= 0 ? 'positive-change' : 'negative-change'}`;
 
             cryptoList.innerHTML = ''; // Clear previous elements
@@ -1089,7 +1115,8 @@
                     // Correctly send the action name for deposit flow
                     window.Telegram.WebApp.sendData(JSON.stringify({ action: "start_deposit_flow" }));
                     console.log("Deposit data sent to WebApp.");
-                } catch (e) {
+                }
+                catch (e) {
                     console.error("Error sending deposit data via WebApp:", e);
                     showStatusMessage("Error sending request.");
                 }
@@ -1105,11 +1132,27 @@
                     // Correctly send the action name for withdraw flow
                     window.Telegram.WebApp.sendData(JSON.stringify({ action: "start_withdraw_flow" }));
                     console.log("Withdrawal data sent to WebApp.");
-                } catch (e) {
+                }
+                catch (e) {
                     console.error("Error sending withdrawal data via WebApp:", e);
                     showStatusMessage("Error sending request.");
                 }
             });
+
+            // Click listener for the main balance card to toggle currency
+            mainBalanceCard.addEventListener('click', () => {
+                if (window.Telegram.WebApp.HapticFeedback) {
+                    window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+                }
+                if (currentDisplayCurrency === 'USD') {
+                    currentDisplayCurrency = 'BTC';
+                } else {
+                    currentDisplayCurrency = 'USD';
+                }
+                fetchAndRenderWalletData(); // Re-render with new display currency
+                showStatusMessage(`Displaying in ${currentDisplayCurrency}`);
+            });
+
         } else {
             // For standalone testing, log clicks
             depositButton.addEventListener('click', () => {
@@ -1121,6 +1164,17 @@
                 // Use custom message box instead of alert()
                 showCustomMessage("Withdrawal: This function works through the Telegram Bot.");
                 console.log("Withdraw button clicked (standalone mode)");
+            });
+
+            // Click listener for the main balance card to toggle currency in standalone
+            mainBalanceCard.addEventListener('click', () => {
+                if (currentDisplayCurrency === 'USD') {
+                    currentDisplayCurrency = 'BTC';
+                } else {
+                    currentDisplayCurrency = 'USD';
+                }
+                fetchAndRenderWalletData(); // Re-render with new display currency
+                showCustomMessage(`Displaying in ${currentDisplayCurrency}`);
             });
 
             // Basic custom message box for standalone mode
