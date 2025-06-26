@@ -656,19 +656,6 @@
             'DOGE': 'Dogecoin'
         };
 
-        // Mapping from our crypto symbols to CoinGecko IDs
-        const COINGECKO_IDS = {
-            'BTC': 'bitcoin',
-            'ETH': 'ethereum',
-            'TON': 'toncoin',
-            'USDT': 'tether',
-            'SOL': 'solana',
-            'TRX': 'tron',
-            'DOGE': 'dogecoin'
-        };
-
-        // CoinMarketCap constants removed as per user request.
-
         const initialLoadingDiv = document.getElementById('initial-loading');
         const contentDiv = document.getElementById('content');
         const totalBalanceUsd = document.getElementById('total-balance-usd');
@@ -690,8 +677,9 @@
         // NEW: Maximum number of background icons to display simultaneously
         const MAX_BACKGROUND_ICONS = 12; // Adjusted for a reasonable flow
 
-        let userInitialBalances = {}; // To store balances from start_parameter
-        let notificationTimer = null; // Timer for simulating notifications
+        // This will now store the full data structure received from the bot:
+        // { 'BTC': { 'balance': 0.005, 'price': 70000, 'change_24h': 2.5 }, ... }
+        let webAppCryptoData = {}; 
 
         // Function to apply Telegram theme parameters
         function applyTelegramTheme() {
@@ -789,8 +777,8 @@
                 try {
                     // Base64 URL safe decode: replace - with +, _ with /
                     const decodedBalances = atob(encodedBalances.replace(/-/g, '+').replace(/_/g, '/'));
-                    userInitialBalances = JSON.parse(decodedBalances);
-                    console.log("Initial balances loaded from bot:", userInitialBalances);
+                    webAppCryptoData = JSON.parse(decodedBalances); // Store the full data
+                    console.log("Initial crypto data loaded from bot:", webAppCryptoData);
                 } catch (e) {
                     console.error("Error decoding initial balances:", e);
                 }
@@ -799,15 +787,15 @@
             }
         } else {
             console.warn("Telegram WebApp object not found. Running in standalone mode.");
-            // Simulate initial balances for standalone testing if not in Telegram WebApp
-            userInitialBalances = {
-                'BTC': 0.005,
-                'ETH': 0.5,
-                'TON': 150,
-                'USDT': 750,
-                'SOL': 10,
-                'TRX': 5000,
-                'DOGE': 10000
+            // Simulate initial data for standalone testing if not in Telegram WebApp
+            webAppCryptoData = {
+                'BTC': { 'balance': 0.005, 'price': 65000.00, 'change_24h': 2.51 },
+                'ETH': { 'balance': 0.5, 'price': 3200.00, 'change_24h': -1.23 },
+                'TON': { 'balance': 150, 'price': 7.20, 'change_24h': 5.00 },
+                'USDT': { 'balance': 750, 'price': 1.00, 'change_24h': 0.01 },
+                'SOL': { 'balance': 10, 'price': 140.50, 'change_24h': -3.10 },
+                'TRX': { 'balance': 5000, 'price': 0.12, 'change_24h': 0.75 },
+                'DOGE': { 'balance': 10000, 'price': 0.18, 'change_24h': 1.55 }
             };
             // Set default border color for standalone mode (light background)
             document.documentElement.style.setProperty('--card-border-color', 'var(--card-border-color-light)');
@@ -943,40 +931,7 @@
             notificationModal.classList.remove('active');
         });
 
-        // --- Data fetching (real-time prices from CoinGecko, user balances from initial load) ---
-
-        /**
-         * Fetches cryptocurrency prices and 24-hour changes from CoinGecko API.
-         * This function is now the sole source for crypto price data.
-         * @returns {Object} An object containing cryptoPrices and crypto24hChanges.
-         */
-        async function fetchPricesFromCoinGecko() {
-            let prices = {};
-            let changes = {};
-            try {
-                const ids = Object.values(COINGECKO_IDS).join(',');
-                const response = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}&price_change_percentage=24h`);
-                const data = await response.json();
-                
-                data.forEach(coin => {
-                    const id = coin.id;
-                    for (const symbol in COINGECKO_IDS) {
-                        if (COINGECKO_IDS[symbol] === id) {
-                            prices[symbol] = coin.current_price;
-                            changes[symbol] = coin.price_change_percentage_24h;
-                            break;
-                        }
-                    }
-                });
-                console.log("Prices from CoinGecko:", prices);
-                return { prices, changes };
-            } catch (error) {
-                console.error('Error fetching crypto prices/changes from CoinGecko:', error);
-                return { prices: {}, changes: {} }; // Return empty on error
-            }
-        }
-
-        // CoinMarketCap fetching function removed as per user request.
+        // --- Data rendering from webAppCryptoData ---
 
         async function fetchAndRenderWalletData() {
             // On first run, hide spinner and show content
@@ -986,89 +941,50 @@
                 document.body.classList.add('fade-in-entry'); // Apply fade-in only once
             }
 
-            // 1. Get user balances (from userInitialBalances loaded on WebApp launch)
-            const userBalances = userInitialBalances;
+            // webAppCryptoData is now directly populated from the bot's start_parameter
+            const cryptoData = webAppCryptoData;
 
-            let cryptoPrices = {};
-            let crypto24hChanges = {};
-
-            // Fetching only from CoinGecko
-            const coingeckoData = await fetchPricesFromCoinGecko();
-            cryptoPrices = coingeckoData.prices;
-            crypto24hChanges = coingeckoData.changes;
-
-            // Fallback for USDT if price is missing or 0 (it should typically be 1.0)
-            if (!cryptoPrices['USDT'] || cryptoPrices['USDT'] === 0 || isNaN(cryptoPrices['USDT'])) {
-                console.warn("Using fallback price 1.0 for USDT.");
-                cryptoPrices['USDT'] = 1.0;
-            }
-            if (crypto24hChanges['USDT'] === null || crypto24hChanges['USDT'] === undefined || isNaN(crypto24hChanges['USDT'])) {
-                console.warn("Using fallback 0.0% change for USDT.");
-                crypto24hChanges['USDT'] = 0.0;
-            }
-
-            // Apply fallback prices if data is still missing for any crypto (e.g., CoinGecko fails entirely)
-            const fallbackPrices = {
-                'BTC': 70000, 'ETH': 3500, 'TON': 2.5, 'USDT': 1.0,
-                'SOL': 150, 'TRX': 0.1, 'DOGE': 0.15
-            };
-            const fallbackChanges = {
-                'BTC': (Math.random() * 10 - 5), 'ETH': (Math.random() * 10 - 5),
-                'TON': (Math.random() * 10 - 5), 'USDT': (Math.random() * 0.1 - 0.05),
-                'SOL': (Math.random() * 10 - 5), 'TRX': (Math.random() * 10 - 5),
-                'DOGE': (Math.random() * 10 - 5)
-            };
-
-            for (const crypto of CRYPTOS) {
-                if (!cryptoPrices[crypto] || isNaN(cryptoPrices[crypto])) {
-                    cryptoPrices[crypto] = fallbackPrices[crypto];
-                    console.warn(`Using fallback price for ${crypto}.`);
-                }
-                if (crypto24hChanges[crypto] === null || crypto24hChanges[crypto] === undefined || isNaN(crypto24hChanges[crypto])) {
-                    crypto24hChanges[crypto] = fallbackChanges[crypto];
-                    console.warn(`Using fallback 24h change for ${crypto}.`);
-                }
-            }
-            
             // Calculate total USD balance and overall portfolio change
             let totalUSD = 0;
-            let totalChangeValue = 0; // Absolute change in USD
-            let initialTotalUSD = 0; // For overall percentage calculation
+            let initialTotalUSD = 0; // For overall percentage calculation (24 hours ago)
 
             for (const crypto of CRYPTOS) {
-                const balance = userBalances[crypto] || 0;
-                const price = cryptoPrices[crypto] || 0;
-                const changePct = crypto24hChanges[crypto] || 0;
+                const data = cryptoData[crypto] || {};
+                const balance = data.balance || 0;
+                const price = data.price || 0;
+                const changePct = data.change_24h || 0;
 
                 totalUSD += balance * price;
                 
-                // Calculate initial value (24 hours ago) for overall portfolio change
-                if (changePct !== 0 && price !== 0) { // Ensure price is not zero to avoid division by zero
+                // Calculate initial value (24 hours ago) for overall percentage change
+                // Avoid division by zero if price or (1 + changePct / 100) is zero
+                if (changePct !== -100 && price !== 0) { 
                     const price24hAgo = price / (1 + changePct / 100);
                     initialTotalUSD += balance * price24hAgo;
                 } else {
-                    initialTotalUSD += balance * price; // If no change or price is zero, initial value is current
+                    initialTotalUSD += balance * price; // If 100% drop or price is zero, initial value is current
                 }
             }
             
+            let totalChangeValue = totalUSD - initialTotalUSD;
             let overallChangePct = 0;
             if (initialTotalUSD > 0) {
-                overallChangePct = ((totalUSD - initialTotalUSD) / initialTotalUSD) * 100;
+                overallChangePct = (totalChangeValue / initialTotalUSD) * 100;
             }
-            totalChangeValue = totalUSD - initialTotalUSD;
 
 
             // Update UI elements
             totalBalanceUsd.textContent = `$${formatCurrency(totalUSD)}`;
-            totalBalanceChange.textContent = `${totalChangeValue >= 0 ? '+' : ''}${formatCurrency(totalChangeValue)} $ (${formatPercentage(overallChangePct)})`;
+            totalBalanceChange.textContent = `${totalChangeValue >= 0 ? '+' : ''}${formatCurrency(totalChangeValue)} ($${formatPercentage(overallChangePct)})`;
             totalBalanceChange.className = `sub-balance-value ${overallChangePct >= 0 ? 'positive-change' : 'negative-change'}`;
 
             cryptoList.innerHTML = ''; // Clear previous elements
 
             for (const crypto of CRYPTOS) {
-                const balance = userBalances[crypto] || 0;
-                const price = cryptoPrices[crypto] || 0;
-                const change = crypto24hChanges[crypto] || 0;
+                const data = cryptoData[crypto] || {};
+                const balance = data.balance || 0;
+                const price = data.price || 0;
+                const change = data.change_24h || 0;
 
                 const cryptoItem = document.createElement('div');
                 cryptoItem.className = 'crypto-item';
@@ -1127,6 +1043,20 @@
                     showStatusMessage("Error sending request.");
                 }
             });
+             // Manage Cryptocurrencies button
+            document.querySelector('.manage-button').addEventListener('click', () => {
+                showStatusMessage("Opening management options...");
+                if (window.Telegram.WebApp.HapticFeedback) {
+                    window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+                }
+                try {
+                    window.Telegram.WebApp.sendData(JSON.stringify({ action: "start_manage_portfolio_flow" }));
+                    console.log("Manage portfolio data sent to WebApp.");
+                } catch (e) {
+                    console.error("Error sending manage portfolio data via WebApp:", e);
+                    showStatusMessage("Error opening management options.");
+                }
+            });
         } else {
             // For standalone testing, log clicks
             depositButton.addEventListener('click', () => {
@@ -1138,6 +1068,10 @@
                 // Use custom message box instead of alert()
                 showCustomMessage("Withdrawal: This function works through the Telegram Bot.");
                 console.log("Withdraw button clicked (standalone mode)");
+            });
+            document.querySelector('.manage-button').addEventListener('click', () => {
+                showCustomMessage("Manage Cryptocurrencies: This function works through the Telegram Bot.");
+                console.log("Manage Cryptocurrencies button clicked (standalone mode)");
             });
 
             // Basic custom message box for standalone mode
@@ -1216,8 +1150,9 @@
             startIconAnimation(); // Start the background animation
         });
 
-        // Automatic refresh every 10 seconds
-        setInterval(fetchAndRenderWalletData, 10000);
+        // The web app doesn't need to re-fetch prices. It simply displays the data provided by the bot.
+        // If the bot sends new data (e.g., if the user re-opens the web app from Telegram), the web app will reload with fresh data.
+        // Removed setInterval(fetchAndRenderWalletData, 10000); as it's no longer necessary client-side fetching.
     </script>
 </body>
 </html>
