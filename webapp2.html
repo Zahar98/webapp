@@ -473,10 +473,10 @@
     <div id="gameContainer">
         <div class="theme-toggle" id="themeToggle">
             <div id="solana-option" class="toggle-option active">
-                <img src="./solana_icon.png" alt="Solana" onerror="this.onerror=null;this.src='https://placehold.co/24x24/9945FF/FFFFFF?text=SOL!'">
+                <img src="./solana_coin.png" alt="Solana" onerror="this.onerror=null;this.src='https://placehold.co/24x24/9945FF/FFFFFF?text=SOL!'">
             </div>
             <div id="ton-option" class="toggle-option">
-                <img src="./ton_icon.png" alt="TON" onerror="this.onerror=null;this.src='https://placehold.co/24x24/0098EA/FFFFFF?text=TON!'">
+                <img src="./ton_coin.png" alt="TON" onerror="this.onerror=null;this.src='https://placehold.co/24x24/0098EA/FFFFFF?text=TON!'">
             </div>
         </div>
 
@@ -555,14 +555,14 @@
 
         // Paths to coin images - now using the same icons as the theme toggle
         const solanaCoinImg = new Image();
-        solanaCoinImg.src = './solana_icon.png'; 
+        solanaCoinImg.src = './solana_coin.png'; 
         solanaCoinImg.onerror = () => {
             console.error("Solana coin image not found. Using placeholder.");
             solanaCoinImg.src = 'https://placehold.co/50x50/9945FF/FFFFFF?text=SOL!'; 
         };
 
         const tonCoinImg = new Image();
-        tonCoinImg.src = './ton_icon.png'; 
+        tonCoinImg.src = './ton_coin.png'; 
         tonCoinImg.onerror = () => {
             console.error("TON coin image not found. Using placeholder.");
             tonCoinImg.src = 'https://placehold.co/50x50/0098EA/FFFFFF?text=TON!'; 
