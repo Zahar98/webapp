@@ -118,21 +118,22 @@
             padding: 1rem 2.5rem;
             border-radius: 12px; /* More rounded */
             border: 4px solid var(--current-secondary); /* Vibrant border */
-            box-shadow: 0 8px 0px var(--current-primary), /* 3D effect */
+            box-shadow: 0 8px 0px var(--current-primary), 
                         0 12px 20px rgba(0,0,0,0.5);
             font-size: 1.5rem;
             cursor: pointer;
             position: absolute;
             bottom: 2rem;
-            right: 1rem; /* Align to bottom right */
             letter-spacing: 0.1em;
             text-transform: uppercase;
+            left: 50%; /* Center the button */
+            transform: translateX(-50%); /* Adjust for half its width to truly center */
 
             /* Gradient background and its animation */
             background: linear-gradient(135deg, var(--current-button-bg) 0%, var(--current-primary) 100%);
             background-size: 200% 200%; /* Make background larger than element */
             background-position: 0% 0%; /* Initial position of the gradient */
-            transition: background-position 1.5s ease-out, /* Animate gradient position */
+            transition: background-position 1.5s ease-out, 
                         box-shadow 1.5s ease, 
                         transform 0.1s ease, 
                         border-color 0.3s ease, 
@@ -141,146 +142,85 @@
         }
         .play-button:hover {
             background-position: 100% 100%; /* Shift gradient position on hover */
-            transform: translateY(-2px);
+            transform: translateX(-50%) translateY(-2px); /* Maintain centering while lifting */
             box-shadow: 0 10px 0px var(--current-primary), 
                         0 14px 22px rgba(0,0,0,0.6);
         }
         .play-button:active {
-            transform: translateY(4px);
+            transform: translateX(-50%) translateY(4px); /* Maintain centering while pressing */
             box-shadow: 0 4px 0px var(--current-primary), 
                         0 8px 15px rgba(0,0,0,0.4);
         }
-        .play-button.hidden-fade { /* Class for hiding with fade */
+        .play-button.hidden-fade { 
             opacity: 0;
             visibility: hidden;
-        }
-
-        /* Cipher Pill & Copy Button */
-        .cipher-container {
-            display: flex;
-            align-items: center;
-            background-color: var(--current-pill-bg);
-            border-radius: 50px; /* Pill shape */
-            padding: 0.5rem 1.5rem;
-            margin-top: 1rem;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            position: absolute;
-            bottom: 2rem;
-            left: 1rem; /* Align to bottom left */
-            transition: background-color 0.3s ease, opacity 0.5s ease-in-out, visibility 0.5s; /* Added opacity and visibility */
-        }
-        .cipher-container.hidden-fade { /* Class for hiding with fade */
-            opacity: 0;
-            visibility: hidden;
-        }
-        .cipher-text {
-            font-family: 'Press Start 2P', cursive;
-            font-size: 1.2rem;
-            color: var(--current-text-color);
-            margin-right: 1rem;
-            white-space: nowrap; /* Prevent text wrapping */
-            text-shadow: 2px 2px 0px rgba(0,0,0,0.2);
-            transition: color 1s ease-in-out;
-        }
-        .copy-button {
-            /* Existing properties */
-            color: var(--current-text-color);
-            border: none;
-            border-radius: 50%; /* Circle button */
-            width: 40px;
-            height: 40px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            font-size: 1.5rem;
-            
-            /* Gradient background and its animation */
-            background: linear-gradient(135deg, var(--current-secondary) 0%, var(--current-primary) 100%);
-            background-size: 200% 200%; /* Make background larger than element */
-            background-position: 0% 0%; /* Initial position of the gradient */
-            transition: background-position 1.5s ease-out, /* Animate gradient position */
-                        box-shadow 1.5s ease, 
-                        transform 0.1s ease;
-            box-shadow: 0 4px 0px var(--current-primary); /* Keep initial shadow */
-        }
-        .copy-button:hover {
-            background-position: 100% 100%; /* Shift gradient position on hover */
-            filter: brightness(1.1); /* Keep brightness filter too */
-            transform: translateY(-1px);
-            box-shadow: 0 5px 0px var(--current-primary);
-        }
-        .copy-button:active {
-            transform: translateY(4px);
-            box-shadow: 0 2px 0px var(--current-primary);
         }
 
         /* Theme Toggle */
         .theme-toggle {
             display: flex;
             align-items: center;
-            background-color: rgba(255, 255, 255, 0.2); /* Semi-transparent white */
+            background-color: rgba(255, 255, 255, 0.2); 
             border-radius: 50px;
-            padding: 0.2rem; /* Reduced padding */
+            padding: 0.2rem; 
             cursor: pointer;
             box-shadow: 0 2px 10px rgba(0,0,0,0.3);
             position: absolute;
-            top: 0.75rem; /* Moved slightly higher */
+            top: 0.75rem; 
             left: 50%;
             transform: translateX(-50%);
             transition: background-color 0.3s ease;
         }
         .toggle-option {
-            padding: 0.3rem 0.8rem; /* Reduced padding */
+            padding: 0.3rem 0.8rem; 
             border-radius: 50px;
             font-weight: bold;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-width: 60px; /* Reduced minimum width */
+            min-width: 60px; 
             transition: background-color 0.3s ease, color 0.3s ease, min-width 0.3s ease;
         }
         .toggle-option.active {
-            background-color: var(--current-secondary); /* Active side uses secondary color */
+            background-color: var(--current-secondary); 
             color: var(--current-text-color);
         }
         .toggle-option img {
-            width: 20px; /* Smaller icon size */
+            width: 20px; 
             height: 20px;
-            margin: 0 auto; /* Center image within toggle option */
+            margin: 0 auto; 
         }
         /* Make toggle smooth by adjusting width of selected option */
         .theme-toggle #solana-option.active,
         .theme-toggle #ton-option.active {
-            min-width: 80px; /* Adjusted active minimum width */
+            min-width: 80px; 
         }
 
 
         /* Falling Coins */
         .coin-fall {
             position: absolute;
-            width: 50px; /* Size of falling coins */
+            width: 50px; 
             height: 50px;
             opacity: 0;
             animation: fall linear forwards;
-            /* pointer-events handled by parent #coinFallContainer */
-            cursor: pointer; /* Cursor indicates clickability */
+            cursor: pointer; 
         }
         /* For coin container, to manage clickability of all coins */
         #coinFallContainer {
-            pointer-events: none; /* Initially do not block clicks */
-            position: absolute; /* Needed for z-index to work */
-            inset: 0; /* Cover the whole area */
+            pointer-events: none; 
+            position: absolute; 
+            inset: 0; 
             overflow: hidden;
-            z-index: 15; /* Changed: higher z-index than gameContainer */
+            z-index: 15; 
         }
         #coinFallContainer.game-active {
-            pointer-events: auto; /* Enable clicks when game starts */
+            pointer-events: auto; 
         }
 
         @keyframes fall {
             0% {
-                transform: translateY(-30vh) rotate(0deg); /* Starts above screen (blind zone) */
+                transform: translateY(-30vh) rotate(0deg); 
                 opacity: 0;
             }
             10% {
@@ -290,7 +230,7 @@
                 opacity: 1;
             }
             100% {
-                transform: translateY(110vh) rotate(720deg); /* Goes below screen */
+                transform: translateY(110vh) rotate(720deg); 
                 opacity: 0;
             }
         }
@@ -299,7 +239,7 @@
         #coinCounter {
             position: absolute;
             top: 1rem;
-            right: 1rem;
+            right: 1rem; 
             background-color: rgba(0, 0, 0, 0.5);
             color: white;
             padding: 0.5rem 1rem;
@@ -309,7 +249,7 @@
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.5s ease-in-out, visibility 0.5s;
-            z-index: 101; /* Higher z-index to be on top of timer */
+            z-index: 101; 
         }
         #coinCounter.show {
             opacity: 1;
@@ -320,7 +260,7 @@
         #gameTimerDisplay {
             position: absolute;
             top: 1rem;
-            left: 1rem;
+            left: 1rem; 
             background-color: rgba(0, 0, 0, 0.5);
             color: white;
             padding: 0.5rem 1rem;
@@ -330,7 +270,7 @@
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.5s ease-in-out, visibility 0.5s;
-            z-index: 100; /* Standard z-index */
+            z-index: 100; 
         }
         #gameTimerDisplay.show {
             opacity: 1;
@@ -366,7 +306,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.7); /* Dark semi-transparent background */
+            background-color: rgba(0, 0, 0, 0.7); 
             display: flex;
             justify-content: center;
             align-items: center;
@@ -381,19 +321,17 @@
         }
 
         .promo-modal-content {
-            background-color: #333; /* Dark modal background */
+            background-color: #333; 
             border-radius: 15px;
             padding: 30px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            text-align: center;
             max-width: 90%;
             animation: modalPopIn 0.3s ease-out forwards;
             position: relative;
-        }
 
-        @keyframes modalPopIn {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
         }
 
         .promo-modal-content h2 {
@@ -402,10 +340,9 @@
             color: var(--current-secondary);
             margin-bottom: 15px;
             text-shadow: 2px 2px 0px var(--current-primary);
-            /* Add these lines to ensure centering */
-            width: 100%; /* Ensure it takes full width of its container */
-            text-align: center; /* Explicitly center text within the h2 */
-            box-sizing: border-box; /* Include padding/border in the width */
+            width: 100%; 
+            text-align: center; 
+            box-sizing: border-box; 
         }
 
         .promo-modal-content p {
@@ -426,7 +363,7 @@
             border: 2px dashed var(--current-secondary);
             display: inline-block;
             letter-spacing: 0.1em;
-            cursor: copy; /* Indicate it's copyable */
+            cursor: copy; 
         }
         .promo-code-display:active {
             transform: scale(0.98);
@@ -483,21 +420,6 @@
                 font-size: 1.2rem;
                 padding: 0.8rem 2rem;
                 bottom: 1.5rem;
-                right: 0.5rem;
-            }
-            .cipher-container {
-                padding: 0.4rem 1rem;
-                bottom: 1.5rem;
-                left: 0.5rem;
-            }
-            .cipher-text {
-                font-size: 1rem;
-                margin-right: 0.5rem;
-            }
-            .copy-button {
-                width: 35px;
-                height: 35px;
-                font-size: 1.2rem;
             }
             .theme-toggle {
                 padding: 0.2rem;
@@ -514,12 +436,20 @@
                 width: 40px;
                 height: 40px;
             }
-            #coinCounter, #gameTimerDisplay {
+            /* Separate rules for mobile positioning of counter and timer */
+            #coinCounter {
                 font-size: 1rem;
                 padding: 0.4rem 0.8rem;
                 top: 0.5rem;
-                right: 0.5rem;
-                left: 0.5rem; /* For timer */
+                right: 0.5rem; 
+                left: auto;   
+            }
+            #gameTimerDisplay {
+                font-size: 1rem;
+                padding: 0.4rem 0.8rem;
+                top: 0.5rem;
+                left: 0.5rem; 
+                right: auto;  
             }
             .promo-modal-content h2 {
                 font-size: 1.5rem;
@@ -552,14 +482,6 @@
 
         <h1 id="gameTitle" class="game-title">Solana Drop</h1>
 
-        <div class="cipher-container" id="cipherContainer">
-            <span id="cipherText" class="cipher-text">🌟🌟🌟🌟🌟</span>
-            <button id="copyButton" class="copy-button">
-                <!-- Copy SVG Icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-copy"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-            </button>
-        </div>
-
         <button id="playButton" class="play-button">Play</button>
     </div>
 
@@ -578,7 +500,7 @@
     <!-- Promo Code Modal -->
     <div id="promoModalOverlay" class="promo-modal-overlay">
         <div class="promo-modal-content">
-            <h2 id="promoModalTitle">Congratulations!</h2>
+            <h2 id="promoModalTitle">COOL!</h2> <!-- Изменено здесь -->
             <p>You have unlocked a special promo code:</p>
             <span id="promoCodeDisplay" class="promo-code-display"></span>
             <p class="mt-4">Click on the promo code to copy it.</p>
@@ -592,9 +514,6 @@
         const gameContainer = document.getElementById('gameContainer');
         const gameTitle = document.getElementById('gameTitle');
         const playButton = document.getElementById('playButton');
-        const cipherText = document.getElementById('cipherText');
-        const cipherContainer = document.getElementById('cipherContainer'); 
-        const copyButton = document.getElementById('copyButton');
         const themeToggle = document.getElementById('themeToggle');
         const solanaOption = document.getElementById('solana-option');
         const tonOption = document.getElementById('ton-option');
@@ -611,21 +530,21 @@
         let pixels = []; // Array to store pixel art "pixels"
         const pixelSize = 10; // Size of each pixel art block
         const pixelColors = [
-            'rgba(26, 26, 26, 0.8)', // --pixel-bg-color
-            'rgba(51, 51, 51, 0.8)', // --pixel-accent-color
+            'rgba(26, 26, 26, 0.8)', 
+            'rgba(51, 51, 51, 0.8)', 
             'rgba(26, 26, 26, 0.5)',
             'rgba(51, 51, 51, 0.5)',
-            'rgba(26, 26, 26, 0.2)' // Fading pixel
+            'rgba(26, 26, 26, 0.2)' 
         ];
-        let pixelSpeedMultiplier = 1; // Speed for pixel animation
+        let pixelSpeedMultiplier = 1; 
         let coinFallInterval = null;
         let gameTimer = null;
-        let countdownInterval = null; // Interval for countdown
+        let countdownInterval = null; 
         let isGamePlaying = false;
-        let isTransitioning = false; // To prevent rapid toggling during transition
+        let isTransitioning = false; 
         let collectedCoins = 0;
         const targetCoins = 50;
-        const gameDuration = 60; // 1 minute in seconds
+        const gameDuration = 60; 
         let timeLeft = gameDuration;
 
         // Promo codes
@@ -634,26 +553,26 @@
             ton: "GT74K"
         };
 
-        // Paths to coin images (assuming they are in the same directory)
+        // Paths to coin images - now using the same icons as the theme toggle
         const solanaCoinImg = new Image();
-        solanaCoinImg.src = './solana_coin.png'; 
+        solanaCoinImg.src = './solana_icon.png'; 
         solanaCoinImg.onerror = () => {
             console.error("Solana coin image not found. Using placeholder.");
-            solanaCoinImg.src = 'https://placehold.co/50x50/9945FF/FFFFFF?text=SOL!';
+            solanaCoinImg.src = 'https://placehold.co/50x50/9945FF/FFFFFF?text=SOL!'; 
         };
 
         const tonCoinImg = new Image();
-        tonCoinImg.src = './ton_coin.png';
+        tonCoinImg.src = './ton_icon.png'; 
         tonCoinImg.onerror = () => {
             console.error("TON coin image not found. Using placeholder.");
-            tonCoinImg.src = 'https://placehold.co/50x50/0098EA/FFFFFF?text=TON!';
+            tonCoinImg.src = 'https://placehold.co/50x50/0098EA/FFFFFF?text=TON!'; 
         };
 
         // --- Canvas Pixel Art Background Animation ---
         function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            initPixels(); // Reinitialize pixels on resize
+            initPixels(); 
         }
 
         function initPixels() {
@@ -667,31 +586,28 @@
                         x: x * pixelSize,
                         y: y * pixelSize,
                         color: pixelColors[Math.floor(Math.random() * pixelColors.length)],
-                        alpha: Math.random() * 0.5 + 0.1, // Random initial opacity
-                        speed: Math.random() * 0.02 + 0.005 // Random animation speed
+                        alpha: Math.random() * 0.5 + 0.1, 
+                        speed: Math.random() * 0.02 + 0.005 
                     });
                 }
             }
         }
 
         function drawPixels() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the entire canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height); 
             
-            // Draw a base background color to ensure no transparent gaps
             ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--pixel-bg-color');
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             for (let i = 0; i < pixels.length; i++) {
                 const pixel = pixels[i];
 
-                // Animate pixel opacity to create a subtle flickering effect
                 pixel.alpha += pixel.speed * pixelSpeedMultiplier;
                 if (pixel.alpha > 0.8 || pixel.alpha < 0.1) {
-                    pixel.speed *= -1; // Reverse speed to make it flicker
+                    pixel.speed *= -1; 
                 }
                 
-                // Draw each pixel
-                ctx.fillStyle = pixel.color.replace(/[\d\.]+\)$/, `${pixel.alpha})`); // Update alpha dynamically
+                ctx.fillStyle = pixel.color.replace(/[\d\.]+\)$/, `${pixel.alpha})`); 
                 ctx.fillRect(pixel.x, pixel.y, pixelSize, pixelSize);
             }
             requestAnimationFrame(drawPixels);
@@ -706,9 +622,8 @@
                 root.style.setProperty('--current-text-color', 'var(--solana-text-color)');
                 root.style.setProperty('--current-button-bg', 'var(--solana-button-bg)');
                 root.style.setProperty('--current-button-hover', 'var(--solana-button-hover)');
-                root.style.setProperty('--current-pill-bg', 'rgba(142, 68, 173, 0.7)'); /* Ensure transparency for pill */
+                root.style.setProperty('--current-pill-bg', 'rgba(142, 68, 173, 0.7)'); 
                 
-                // No HSL variables for canvas background anymore, handled by pixel art
                 root.style.setProperty('--pixel-bg-color', '#1a1a1a');
                 root.style.setProperty('--pixel-accent-color', '#333333');
 
@@ -721,11 +636,10 @@
                 root.style.setProperty('--current-text-color', 'var(--ton-text-color)');
                 root.style.setProperty('--current-button-bg', 'var(--ton-button-bg)');
                 root.style.setProperty('--current-button-hover', 'var(--ton-button-hover)');
-                root.style.setProperty('--current-pill-bg', 'rgba(0, 152, 234, 0.7)'); /* Ensure transparency for pill */
+                root.style.setProperty('--current-pill-bg', 'rgba(0, 152, 234, 0.7)');
 
-                // No HSL variables for canvas background anymore, handled by pixel art
-                root.style.setProperty('--pixel-bg-color', '#0d1a26'); /* Darker blue-ish for TON */
-                root.style.setProperty('--pixel-accent-color', '#1a334d'); /* Slightly lighter blue-ish */
+                root.style.setProperty('--pixel-bg-color', '#0d1a26'); 
+                root.style.setProperty('--pixel-accent-color', '#1a334d'); 
 
                 gameTitle.textContent = "TON Drop";
                 solanaOption.classList.remove('active');
@@ -736,47 +650,43 @@
 
         // --- Falling Coin Logic ---
         function createFallingCoin() {
-            // Only create coins if game is playing
             if (!isGamePlaying) return;
 
             const coin = document.createElement('img');
             coin.className = 'coin-fall';
             coin.src = currentTheme === 'solana' ? solanaCoinImg.src : tonCoinImg.src;
             
-            // Randomize coin size slightly
-            const size = Math.random() * (60 - 40) + 40; // Size between 40px and 60px
+            const size = Math.random() * (60 - 40) + 40; 
             coin.style.width = `${size}px`;
             coin.style.height = `${size}px`;
 
-            // Randomize horizontal position across the entire screen width
             coin.style.left = `${Math.random() * (window.innerWidth - size)}px`;
-            // Randomize animation duration
-            coin.style.animationDuration = `${Math.random() * 3 + 2}s`; // 2 to 5 seconds
-            // Randomize animation delay to make them appear less uniformly
+            coin.style.animationDuration = `${Math.random() * 3 + 2}s`; 
             coin.style.animationDelay = `-${Math.random() * 2}s`; 
 
-            // Make coin clickable
             coin.addEventListener('click', (event) => {
-                if (isGamePlaying) { // Only count if game is active
+                if (isGamePlaying) { 
                     collectedCoins++;
                     updateCounterDisplay();
                     
-                    // Haptic feedback
                     if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
                         window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
                     }
 
-                    // Create confetti effect
                     createConfetti(event.clientX, event.clientY, currentTheme);
 
-                    coin.remove(); // Remove coin on click
-                    event.stopPropagation(); // Stop event propagation to prevent triggering other elements
+                    coin.remove(); 
+                    event.stopPropagation(); 
+
+                    if (collectedCoins >= targetCoins) {
+                        stopGame(); 
+                        showPromoCodeModal(true); 
+                    }
                 }
             });
 
             coinFallContainer.appendChild(coin);
 
-            // Remove coin after animation ends to prevent DOM bloat
             coin.addEventListener('animationend', () => {
                 coin.remove();
             });
@@ -788,28 +698,26 @@
             confettiContainer.style.position = 'fixed';
             confettiContainer.style.left = `${x}px`;
             confettiContainer.style.top = `${y}px`;
-            confettiContainer.style.pointerEvents = 'none'; // Do not block other clicks
-            confettiContainer.style.zIndex = '9999'; // Ensure confetti is on top
+            confettiContainer.style.pointerEvents = 'none'; 
+            confettiContainer.style.zIndex = '9999'; 
 
             const colors = theme === 'solana' 
-                ? ['var(--solana-secondary)', 'var(--solana-primary)', '#ffffff', '#000000'] // Solana colors and white/black for contrast
-                : ['var(--ton-secondary)', 'var(--ton-primary)', '#000000', '#cccccc']; // TON colors and black/grey
+                ? ['var(--solana-secondary)', 'var(--solana-primary)', '#ffffff', '#000000'] 
+                : ['var(--ton-secondary)', 'var(--ton-primary)', '#000000', '#cccccc']; 
 
-            const numPieces = 15; // Number of confetti pieces
+            const numPieces = 15; 
             for (let i = 0; i < numPieces; i++) {
                 const piece = document.createElement('div');
-                piece.className = 'confetti-piece'; // Apply common class for animation
-                piece.style.width = `${Math.random() * 8 + 4}px`; // Size from 4 to 12px
+                piece.className = 'confetti-piece'; 
+                piece.style.width = `${Math.random() * 8 + 4}px`; 
                 piece.style.height = piece.style.width;
                 piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
                 
-                // Random offset and rotation for animation
-                const finalX = (Math.random() - 0.5) * 100; // Spreading motion
+                const finalX = (Math.random() - 0.5) * 100; 
                 const finalY = (Math.random() - 0.5) * 100;
-                const rotation = Math.random() * 720; // Rotation up to 720 degrees
-                const duration = Math.random() * 0.7 + 0.5; // Duration 0.5 to 1.2 seconds
+                const rotation = Math.random() * 720; 
+                const duration = Math.random() * 0.7 + 0.5; 
 
-                // Set CSS variables for animation
                 piece.style.setProperty('--confetti-dx', `${finalX}px`);
                 piece.style.setProperty('--confetti-dy', `${finalY}px`);
                 piece.style.setProperty('--confetti-rot', `${rotation}deg`);
@@ -820,10 +728,9 @@
 
             document.body.appendChild(confettiContainer);
 
-            // Remove confetti container after animation completes
             setTimeout(() => {
                 confettiContainer.remove();
-            }, 1200); // Maximum animation duration + small buffer
+            }, 1200); 
         }
 
 
@@ -832,83 +739,67 @@
         }
 
         function startGame() {
-            if (isGamePlaying) return; // If game is already running, exit
+            if (isGamePlaying) return; 
             isGamePlaying = true;
-            collectedCoins = 0; // Reset collected coins
+            collectedCoins = 0; 
             updateCounterDisplay();
-            timeLeft = gameDuration; // Reset timer
-            updateTimerDisplay(); // Update timer display
+            timeLeft = gameDuration; 
+            updateTimerDisplay(); 
 
-            // Smoothly hide Play button and promo code pill
             playButton.classList.add('hidden-fade'); 
-            cipherContainer.classList.add('hidden-fade'); 
             
-            // Smoothly show coin counter and timer
             coinCounter.classList.add('show'); 
             gameTimerDisplay.classList.add('show');
 
-            playButton.disabled = true; // Disable button during game
-            cipherText.style.pointerEvents = 'none'; // Disable copy button interaction
-            copyButton.disabled = true; // Disable copy button
-            coinFallContainer.classList.add('game-active'); // Activate coin clickability
+            playButton.disabled = true; 
+            coinFallContainer.classList.add('game-active'); 
 
-            pixelSpeedMultiplier = 5; // Accelerate pixel background animation
+            pixelSpeedMultiplier = 5; 
 
-            // Start dropping coins (optimized)
-            coinFallInterval = setInterval(createFallingCoin, 500); // Reduced coin creation frequency (slower falling)
+            coinFallInterval = setInterval(createFallingCoin, 500); 
 
-            // Start game timer
             countdownInterval = setInterval(() => {
                 timeLeft--;
                 updateTimerDisplay();
                 if (timeLeft <= 0) {
                     stopGame();
                     if (collectedCoins >= targetCoins) {
-                        showPromoCodeModal(true); // Win by score
+                        showPromoCodeModal(true); 
                     } else {
-                        showStatus(`Game Over! You collected ${collectedCoins} coins.`); // Lose by time
+                        showStatus(`Game Over! You collected ${collectedCoins} coins.`); 
                     }
                 }
             }, 1000);
 
-            // Timer to automatically stop the game after gameDuration seconds
             gameTimer = setTimeout(() => {
-                if (isGamePlaying) { // Check if game was not manually stopped
+                if (isGamePlaying) { 
                     stopGame();
-                    if (collectedCoins >= targetCoins) {
-                        showPromoCodeModal(true); // Win by score
-                    } else {
-                        showStatus(`Game Over! You collected ${collectedCoins} coins.`); // Lose by time
+                    if (collectedCoins < targetCoins) {
+                        showStatus(`Game Over! You collected ${collectedCoins} coins.`); 
                     }
                 }
-            }, gameDuration * 1000); // Convert seconds to milliseconds
+            }, gameDuration * 1000); 
         }
 
         function stopGame() {
-            if (!isGamePlaying) return; // If game is already stopped, exit
+            if (!isGamePlaying) return; 
             isGamePlaying = false;
             
-            // Smoothly show Play button and promo code pill
             playButton.classList.remove('hidden-fade'); 
-            cipherContainer.classList.remove('hidden-fade'); 
             
-            // Smoothly hide coin counter and timer
             coinCounter.classList.remove('show'); 
             gameTimerDisplay.classList.remove('show');
 
             playButton.disabled = false;
-            cipherText.style.pointerEvents = 'auto'; // Enable copy button interaction
-            copyButton.disabled = false;
-            coinFallContainer.classList.remove('game-active'); // Deactivate coin clickability
+            coinFallContainer.classList.remove('game-active'); 
 
-            pixelSpeedMultiplier = 1; // Reset background speed
+            pixelSpeedMultiplier = 1; 
             clearInterval(coinFallInterval);
             coinFallInterval = null;
-            clearInterval(countdownInterval); // Clear countdown interval
-            clearTimeout(gameTimer); // Clear game timer
+            clearInterval(countdownInterval); 
+            clearTimeout(gameTimer); 
             gameTimer = null;
 
-            // Remove all existing falling coins
             coinFallContainer.innerHTML = '';
         }
 
@@ -931,11 +822,11 @@
         function showPromoCodeModal(isWin = false) {
             let promoCode = promoCodes[currentTheme];
             if (isWin) {
-                promoModalTitle.textContent = "Congratulations!";
+                promoModalTitle.textContent = "COOL!"; // Изменено здесь
                 promoCodeDisplay.textContent = promoCode;
             } else {
                 promoModalTitle.textContent = "Game Over!";
-                promoCodeDisplay.textContent = "Try again!"; // Or other text for losing
+                promoCodeDisplay.textContent = "Try again!"; 
             }
             promoModalOverlay.classList.add('show');
         }
@@ -945,26 +836,7 @@
         }
 
         // --- Event Listeners ---
-        playButton.addEventListener('click', startGame); // Call startGame directly
-
-        copyButton.addEventListener('click', () => {
-            const textToCopy = cipherText.textContent;
-            try {
-                // Create a temporary textarea element
-                const textarea = document.createElement('textarea');
-                textarea.value = textToCopy;
-                textarea.style.position = 'fixed'; // Avoid scrolling to bottom
-                textarea.style.opacity = '0'; // Hide it
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand('copy'); // Execute copy command
-                document.body.removeChild(textarea); // Clean up
-                showStatus('Copied!');
-            } catch (err) {
-                console.error('Failed to copy text: ', err);
-                showStatus('Copy failed.');
-            }
-        });
+        playButton.addEventListener('click', startGame); 
 
         promoCodeDisplay.addEventListener('click', () => {
             const textToCopy = promoCodeDisplay.textContent;
@@ -988,37 +860,35 @@
         closePromoModalButton.addEventListener('click', hidePromoCodeModal);
 
         themeToggle.addEventListener('click', async () => {
-            if (isTransitioning) return; // Prevent multiple clicks during transition
+            if (isTransitioning) return; 
             isTransitioning = true;
             
-            stopGame(); // Stop current game and clear coins
+            stopGame(); 
 
-            gameTitle.style.opacity = 0; // Smoothly hide title
-            gameContainer.style.pointerEvents = 'none'; // Disable interactions during transition (important)
-            themeToggle.style.pointerEvents = 'none'; // Disable theme toggle during transition
+            gameTitle.style.opacity = 0; 
+            gameContainer.style.pointerEvents = 'none'; 
+            themeToggle.style.pointerEvents = 'none'; 
 
-            // Wait for title to fade out
             await new Promise(resolve => setTimeout(resolve, 500)); 
 
             const newTheme = currentTheme === 'solana' ? 'ton' : 'solana';
             applyTheme(newTheme);
 
-            // Small delay to ensure theme colors are applied before re-showing title
             await new Promise(resolve => setTimeout(resolve, 100)); 
             
-            gameTitle.style.opacity = 1; // Smoothly show new title
-            gameContainer.style.pointerEvents = 'auto'; // Re-enable interactions
-            themeToggle.style.pointerEvents = 'auto'; // Re-enable theme toggle
+            gameTitle.style.opacity = 1; 
+            gameContainer.style.pointerEvents = 'auto'; 
+            themeToggle.style.pointerEvents = 'auto'; 
             isTransitioning = false;
         });
 
         // Initial setup
         window.addEventListener('resize', resizeCanvas);
-        resizeCanvas(); // Set initial canvas size and pixels
-        drawPixels(); // Start pixel animation loop
-        applyTheme('solana'); // Set initial theme
-        updateCounterDisplay(); // Set initial counter text
-        updateTimerDisplay(); // Set initial timer text
+        resizeCanvas(); 
+        drawPixels(); 
+        applyTheme('solana'); 
+        updateCounterDisplay(); 
+        updateTimerDisplay(); 
     </script>
 </body>
 </html>
